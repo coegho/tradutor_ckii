@@ -1,0 +1,2 @@
+/home/coegho/.local/share/Steam/steamapps/common/Crusader Kings II/localisation
+/home/coegho/mod_ckii_galego/ckiigalego/localisation
