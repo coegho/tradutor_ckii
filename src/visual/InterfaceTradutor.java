@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package visual;
 
 import excepcions.CancelarAccionExcepcion;
@@ -77,6 +72,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         miGardar = new javax.swing.JMenuItem();
         mNavegacion = new javax.swing.JMenu();
         miCopiar = new javax.swing.JMenuItem();
+        miRestaurarTraducion = new javax.swing.JMenuItem();
 
         dialEscollerFicheiro.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
 
@@ -217,6 +213,15 @@ public class InterfaceTradutor extends javax.swing.JFrame {
             }
         });
         mNavegacion.add(miCopiar);
+
+        miRestaurarTraducion.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
+        miRestaurarTraducion.setText("Restaurar tradución");
+        miRestaurarTraducion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miRestaurarTraducionActionPerformed(evt);
+            }
+        });
+        mNavegacion.add(miRestaurarTraducion);
 
         barraMenu.add(mNavegacion);
 
@@ -390,7 +395,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         if(index != -1) {
             txtCodigo.setText(ficheiroOrixeActivo.lerCodigo(index));
             txtIngles.setText(ficheiroOrixeActivo.lerCadea(index,
-                    FicheiroCSVOrixe.idiomaBase.POR_DEFECTO));
+                    FicheiroCSVOrixe.idiomaBase.INGLES));
             txtFrances.setText(ficheiroOrixeActivo.lerCadea(index,
                     FicheiroCSVOrixe.idiomaBase.FRANCES));
             txtAleman.setText(ficheiroOrixeActivo.lerCadea(index,
@@ -399,7 +404,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
                     FicheiroCSVOrixe.idiomaBase.ESPANHOL));
             if(txtTraducion.isEnabled()) {
                 cambiando = true;
-                txtTraducion.setText(ficheiroDestinoActivo.getCadea(index));
+                txtTraducion.setText(ficheiroDestinoActivo.getTraducion(index));
                 cambiando = false;
             }
         }
@@ -489,10 +494,25 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         Configuracion.cargarConfiguracion();
     }//GEN-LAST:event_formWindowOpened
 
+    private void miRestaurarTraducionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miRestaurarTraducionActionPerformed
+        String cadeaOrixe = ficheiroOrixeActivo.lerCadea(indexActual);
+        ficheiroDestinoActivo.restaurarTraducion(indexActual, cadeaOrixe);
+    }//GEN-LAST:event_miRestaurarTraducionActionPerformed
+
+    /**
+     *
+     * @return
+     */
     public String getRutaDirectorioOrixe() {
         return rutaDirectorioOrixe;
     }
 
+    /**
+     *
+     * @param rutaDirectorioOrixe
+     * @throws CancelarAccionExcepcion
+     * @throws IOException
+     */
     public void setRutaDirectorioOrixe(String rutaDirectorioOrixe) throws CancelarAccionExcepcion, IOException {
         this.rutaDirectorioOrixe = rutaDirectorioOrixe;
         setRutaDirectorioDestino(null);
@@ -502,10 +522,20 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public String getRutaDirectorioDestino() {
         return rutaDirectorioDestino;
     }
 
+    /**
+     *
+     * @param rutaDirectorioDestino
+     * @throws CancelarAccionExcepcion
+     * @throws IOException
+     */
     public void setRutaDirectorioDestino(String rutaDirectorioDestino) throws CancelarAccionExcepcion, IOException {
         if(this.rutaDirectorioDestino != null) {
             //Xa se escolleu un directorio de destino
@@ -535,6 +565,10 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         }
     }
     
+    /**
+     *
+     * @return
+     */
     public int numFicheirosCambiados() {
         if(lf != null) {
             return lf.numFicheirosCambiados();
@@ -544,6 +578,9 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         }
     }
 
+    /**
+     *
+     */
     public void mostrarEstadoGardado() {
         if(senCambios()) {
             lblGardado.setText("Sen cambios que gardar");
@@ -553,6 +590,10 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         }
     }
     
+    /**
+     *
+     * @return
+     */
     public boolean isLinhaCambiada() {
         if(getFicheiroDestinoActivo() != null) {
             return getFicheiroDestinoActivo().haiCambios(indexActual);
@@ -562,29 +603,55 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public FicheiroCSVOrixe getFicheiroOrixeActivo() {
         return ficheiroOrixeActivo;
     }
 
+    /**
+     *
+     * @param ficheiroOrixeActivo
+     */
     public void setFicheiroOrixeActivo(FicheiroCSVOrixe ficheiroOrixeActivo) {
         this.ficheiroOrixeActivo = ficheiroOrixeActivo;
     }
 
+    /**
+     *
+     * @return
+     */
     public FicheiroDestino getFicheiroDestinoActivo() {
         return ficheiroDestinoActivo;
     }
 
+    /**
+     *
+     * @param ficheiroDestinoActivo
+     */
     public void setFicheiroDestinoActivo(FicheiroDestino ficheiroDestinoActivo) {
         this.ficheiroDestinoActivo = ficheiroDestinoActivo;
     }
     
-    void notificarCambioNaTraducion() {
+    /**
+     *
+     */
+    public void notificarCambioNaTraducion() {
         if(!cambiando)
             traducionTocada = true;
     }
     
-
+    /**
+     *
+     * @throws CancelarAccionExcepcion
+     * @throws IOException
+     */
     public void confirmarGardado() throws CancelarAccionExcepcion, IOException {
+        if(indexActual != -1 && txtTraducion.isEnabled() && traducionTocada) {
+            ficheiroDestinoActivo.setTraducion(indexActual, txtTraducion.getText());
+        }
         if(senCambios()) {
             return; //Xa está gardado
         }
@@ -598,6 +665,10 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         }
     }
     
+    /**
+     *
+     * @throws IOException
+     */
     public void gardarDatos() throws IOException {
         if(indexActual != -1 && txtTraducion.isEnabled() && traducionTocada) {
             ficheiroDestinoActivo.setTraducion(indexActual, txtTraducion.getText());
@@ -664,6 +735,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
     private javax.swing.JMenuItem miDestino;
     private javax.swing.JMenuItem miGardar;
     private javax.swing.JMenuItem miOrixe;
+    private javax.swing.JMenuItem miRestaurarTraducion;
     private javax.swing.JTextField txtAleman;
     private javax.swing.JTextField txtCodigo;
     private javax.swing.JTextField txtEspanhol;

@@ -22,6 +22,10 @@ public class Configuracion {
     private static String rutaOrixe;
     private static String rutaDestino;
 
+    /**
+     *
+     * @return
+     */
     public static String getRutaOrixe() {
         if(rutaOrixe == null) {
             return ".";
@@ -29,10 +33,18 @@ public class Configuracion {
         return rutaOrixe;
     }
 
+    /**
+     *
+     * @param rutaOrixe
+     */
     public static void setRutaOrixe(String rutaOrixe) {
         Configuracion.rutaOrixe = rutaOrixe;
     }
 
+    /**
+     *
+     * @return
+     */
     public static String getRutaDestino() {
         if(rutaDestino == null) {
             return ".";
@@ -40,10 +52,17 @@ public class Configuracion {
         return rutaDestino;
     }
 
+    /**
+     *
+     * @param rutaDestino
+     */
     public static void setRutaDestino(String rutaDestino) {
         Configuracion.rutaDestino = rutaDestino;
     }
     
+    /**
+     *
+     */
     public static void cargarConfiguracion() {
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(
@@ -56,6 +75,9 @@ public class Configuracion {
         }
     }
     
+    /**
+     *
+     */
     public static void gardarConfiguracion() {
         try {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(

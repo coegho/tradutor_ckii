@@ -22,10 +22,20 @@ public abstract class CadeaTraducion {
         traducions = traducions.subList(1, traducions.size());
     }
     
+    /**
+     *
+     * @return
+     */
     public String getCodigo() {
         return codigo;
     }
 
+    /**
+     *
+     * @param codigo
+     * @param traducions
+     * @return
+     */
     public static String unirCadea(String codigo, List<String> traducions) {
         StringBuilder sb = new StringBuilder(codigo);
         for(String s : traducions) {

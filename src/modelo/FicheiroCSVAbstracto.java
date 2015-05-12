@@ -20,6 +20,13 @@ public abstract class FicheiroCSVAbstracto {
     protected String nome;
     protected File ficheiro;
     
+    /**
+     *
+     * @param ficheiro
+     * @return
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     public List<String> lerCadeasDendeFicheiro(File ficheiro) throws FileNotFoundException, IOException {
         List<String> ret = new ArrayList<>();
         this.ficheiro = ficheiro;
@@ -36,10 +43,18 @@ public abstract class FicheiroCSVAbstracto {
         return ret;
     }
     
+    /**
+     *
+     * @return
+     */
     public static String getDelim() {
         return delim;
     }
     
+    /**
+     *
+     * @return
+     */
     public String getNome() {
         return nome;
     }

@@ -15,6 +15,11 @@ public class FicheiroDestino extends FicheiroCSVAbstracto {
     
     protected List<CadeaTraducionDestino> cadeas;
 
+    /**
+     *
+     * @param ficheiro
+     * @throws IOException
+     */
     public FicheiroDestino(File ficheiro) throws IOException {
         this.ficheiro = ficheiro;
         cadeas = new ArrayList<>();
@@ -23,6 +28,12 @@ public class FicheiroDestino extends FicheiroCSVAbstracto {
         }
     }
     
+    /**
+     *
+     * @param orixe
+     * @param ficheiro
+     * @throws IOException
+     */
     public FicheiroDestino(File orixe, File ficheiro) throws IOException {
         this.ficheiro = ficheiro;
         cadeas = new ArrayList<>();
@@ -31,14 +42,37 @@ public class FicheiroDestino extends FicheiroCSVAbstracto {
         }
     }
     
+    /**
+     *
+     * @param index
+     * @param texto
+     */
     public void setTraducion(int index, String texto) {
         cadeas.get(index).setTraducion(texto);
     }
  
-    public String getCadea(int index) {
+    /**
+     *
+     * @param index
+     * @return
+     */
+    public String getTraducion(int index) {
         return cadeas.get(index).getTraducion();
     }
+    
+    /**
+     *
+     * @param index
+     * @param cadeaOrixe
+     */
+    public void restaurarTraducion(int index, String cadeaOrixe) {
+        cadeas.get(index).setTraducionsDendeCadea(cadeaOrixe);
+    }
    
+    /**
+     *
+     * @return
+     */
     public int getNumCambios() {
         int ret = 0;
         for(CadeaTraducionDestino c : cadeas) {
@@ -49,10 +83,20 @@ public class FicheiroDestino extends FicheiroCSVAbstracto {
         return ret;
     }
     
+    /**
+     *
+     * @param index
+     * @return
+     */
     public boolean haiCambios(int index) {
         return cadeas.get(index).haiCambios();
     }
 
+    /**
+     *
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     public void escribirDatos() throws FileNotFoundException, IOException {
         if(getNumCambios() == 0) {
             return;

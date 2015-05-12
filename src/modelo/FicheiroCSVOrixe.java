@@ -1,13 +1,8 @@
 package modelo;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,47 +11,78 @@ import java.util.List;
  * @author coegho
  */
 public class FicheiroCSVOrixe extends FicheiroCSVAbstracto {
-    
-    
+
     protected List<CadeaTraducionOrixe> cadeas;
-    
+
+    /**
+     *
+     * @param ficheiro
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     public FicheiroCSVOrixe(File ficheiro) throws FileNotFoundException, IOException {
         cadeas = new ArrayList<>();
-        for(String l : lerCadeasDendeFicheiro(ficheiro)) {
+        for (String l : lerCadeasDendeFicheiro(ficheiro)) {
             cadeas.add(new CadeaTraducionOrixe(l));
         }
     }
-    
+
+    /**
+     *
+     * @param index
+     * @param l
+     * @return
+     */
     public String lerCadea(int index, idiomaBase l) {
         return cadeas.get(index).getIdioma(l);
     }
-    
+
+    /**
+     *
+     * @param index
+     * @return
+     */
     public String lerCadea(int index) {
         return cadeas.toString();
     }
-    
+
+    /**
+     *
+     * @param index
+     * @return
+     */
     public String lerCodigo(int index) {
-        if(index >= 0 && index < cadeas.size()) {
-           return cadeas.get(index).getCodigo();
-        }
-        else {
+        if (index >= 0 && index < cadeas.size()) {
+            return cadeas.get(index).getCodigo();
+        } else {
             throw new ArrayIndexOutOfBoundsException(index);
         }
     }
 
-    
+    /**
+     *
+     * @return
+     */
     public int getSize() {
         return cadeas.size();
     }
 
+    /**
+     *
+     * @return
+     */
     public File getFicheiro() {
         return ficheiro;
     }
-    
+
+    /**
+     *
+     */
     public enum idiomaBase {
-            POR_DEFECTO, FRANCES, ALEMAN, ESPANHOL;
-    }   
- 
+
+        INGLES, FRANCES, ALEMAN, ESPANHOL;
+    }
+
 }
 
 class CadeaTraducionOrixe extends CadeaTraducion {
@@ -66,8 +92,8 @@ class CadeaTraducionOrixe extends CadeaTraducion {
     }
 
     public String getIdioma(FicheiroCSVOrixe.idiomaBase i) {
-        switch(i) {
-            case POR_DEFECTO:
+        switch (i) {
+            case INGLES:
                 return getIngles();
             case FRANCES:
                 return getFrances();
@@ -81,7 +107,7 @@ class CadeaTraducionOrixe extends CadeaTraducion {
     }
 
     public String getIngles() {
-        return traducions.get(1);
+        return traducions.get(0);
     }
 
     public void setIngles(String ingles) {
