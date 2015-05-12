@@ -24,7 +24,7 @@ public class Configuracion {
 
     public static String getRutaOrixe() {
         if(rutaOrixe == null) {
-            cargarConfiguracion();
+            return ".";
         }
         return rutaOrixe;
     }
@@ -35,7 +35,7 @@ public class Configuracion {
 
     public static String getRutaDestino() {
         if(rutaDestino == null) {
-            cargarConfiguracion();
+            return ".";
         }
         return rutaDestino;
     }
@@ -48,13 +48,11 @@ public class Configuracion {
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(
                     new DataInputStream(new FileInputStream(new File("conf.txt")))));
-            rutaOrixe = br.readLine();
-            rutaDestino = br.readLine();
+            setRutaOrixe(br.readLine());
+            setRutaDestino(br.readLine());
             br.close();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Configuracion.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(Configuracion.class.getName()).log(Level.SEVERE, null, ex);
+            
         }
     }
     
@@ -62,9 +60,9 @@ public class Configuracion {
         try {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
                     new DataOutputStream(new FileOutputStream(new File("conf.txt"), false))));
-            bw.write(rutaOrixe);
+            bw.write(getRutaOrixe());
             bw.newLine();
-            bw.write(rutaDestino);
+            bw.write(getRutaDestino());
             bw.close();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Configuracion.class.getName()).log(Level.SEVERE, null, ex);

@@ -27,12 +27,12 @@ import modelo.FicheiroDestino;
  *
  * @author coegho
  */
-public class Interface extends javax.swing.JFrame {
+public class InterfaceTradutor extends javax.swing.JFrame {
 
     /**
      * Creates new form Interface
      */
-    public Interface() {
+    public InterfaceTradutor() {
         initComponents();
     }
 
@@ -85,6 +85,9 @@ public class Interface extends javax.swing.JFrame {
         setMaximumSize(new java.awt.Dimension(1000, 1000));
         setName("Tradutor CKII"); // NOI18N
         addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
@@ -117,218 +120,210 @@ public class Interface extends javax.swing.JFrame {
             }
         });
         jScrollPane1.setViewportView(txtTraducion);
-        txtTraducion.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                setGardado(false);
+        txtTraducion.getDocument().addDocumentListener(new CampoTraducionListener(this));
+
+        lblEspanhol.setText("Español:");
+
+        lblIngles.setText("Inglés:");
+
+        lblFrances.setText("Francés:");
+
+        lblAleman.setText("Alemán:");
+
+        listFicheiros.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        listFicheiros.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                listFicheirosValueChanged(evt);
             }
-            public void removeUpdate(DocumentEvent e) {
-                setGardado(false);
+        });
+        jScrollPane2.setViewportView(listFicheiros);
+
+        listCodigos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        listCodigos.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                listCodigosValueChanged(evt);
             }
-            public void insertUpdate(DocumentEvent e) {
-                setGardado(false);
-            }});
+        });
+        jScrollPane3.setViewportView(listCodigos);
 
-            lblEspanhol.setText("Español:");
+        txtCodigo.setEditable(false);
 
-            lblIngles.setText("Inglés:");
+        txtIngles.setEditable(false);
 
-            lblFrances.setText("Francés:");
+        txtFrances.setEditable(false);
+        txtFrances.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtFrancesActionPerformed(evt);
+            }
+        });
 
-            lblAleman.setText("Alemán:");
+        txtAleman.setEditable(false);
 
-            listFicheiros.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-            listFicheiros.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-                public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                    listFicheirosValueChanged(evt);
-                }
-            });
-            jScrollPane2.setViewportView(listFicheiros);
+        txtEspanhol.setEditable(false);
 
-            listCodigos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-            listCodigos.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-                public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                    listCodigosValueChanged(evt);
-                }
-            });
-            jScrollPane3.setViewportView(listCodigos);
+        lblDestino.setText("Ruta destino:");
 
-            txtCodigo.setEditable(false);
+        lblOrixe.setText("Ruta orixe:");
 
-            txtIngles.setEditable(false);
+        txtRutaOrixe.setEditable(false);
+        txtRutaOrixe.setText("<Sen ruta seleccionada>");
 
-            txtFrances.setEditable(false);
-            txtFrances.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    txtFrancesActionPerformed(evt);
-                }
-            });
+        txtRutaDestino.setEditable(false);
+        txtRutaDestino.setText("<Sen ruta seleccionada>");
 
-            txtAleman.setEditable(false);
+        lblGardado.setFont(new java.awt.Font("Cantarell", 0, 12)); // NOI18N
+        lblGardado.setText("Sen cambios que gardar");
 
-            txtEspanhol.setEditable(false);
+        mFicheiro.setText("Ficheiro");
 
-            lblDestino.setText("Ruta destino:");
+        miOrixe.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
+        miOrixe.setText("Escoller directorio orixe...");
+        miOrixe.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miOrixeActionPerformed(evt);
+            }
+        });
+        mFicheiro.add(miOrixe);
 
-            lblOrixe.setText("Ruta orixe:");
+        miDestino.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_MASK));
+        miDestino.setText("Escoller directorio destino...");
+        miDestino.setEnabled(false);
+        miDestino.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miDestinoActionPerformed(evt);
+            }
+        });
+        mFicheiro.add(miDestino);
 
-            txtRutaOrixe.setEditable(false);
-            txtRutaOrixe.setText("<Sen ruta seleccionada>");
+        miGardar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
+        miGardar.setText("Gardar todos os cambios");
+        miGardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miGardarActionPerformed(evt);
+            }
+        });
+        mFicheiro.add(miGardar);
 
-            txtRutaDestino.setEditable(false);
-            txtRutaDestino.setText("<Sen ruta seleccionada>");
+        barraMenu.add(mFicheiro);
 
-            lblGardado.setFont(new java.awt.Font("Cantarell", 0, 12)); // NOI18N
-            lblGardado.setText("Sen cambios que gardar");
+        mNavegacion.setText("Navegación");
 
-            mFicheiro.setText("Ficheiro");
+        miCopiar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_MASK));
+        miCopiar.setText("Copiar do inglés");
+        miCopiar.setEnabled(false);
+        miCopiar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miCopiarActionPerformed(evt);
+            }
+        });
+        mNavegacion.add(miCopiar);
 
-            miOrixe.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
-            miOrixe.setText("Escoller directorio orixe...");
-            miOrixe.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    miOrixeActionPerformed(evt);
-                }
-            });
-            mFicheiro.add(miOrixe);
+        barraMenu.add(mNavegacion);
 
-            miDestino.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_MASK));
-            miDestino.setText("Escoller directorio destino...");
-            miDestino.setEnabled(false);
-            miDestino.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    miDestinoActionPerformed(evt);
-                }
-            });
-            mFicheiro.add(miDestino);
+        setJMenuBar(barraMenu);
 
-            miGardar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
-            miGardar.setText("Gardar todos os cambios");
-            miGardar.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    miGardarActionPerformed(evt);
-                }
-            });
-            mFicheiro.add(miGardar);
-
-            barraMenu.add(mFicheiro);
-
-            mNavegacion.setText("Navegación");
-
-            miCopiar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_MASK));
-            miCopiar.setText("Copiar do inglés");
-            miCopiar.setEnabled(false);
-            miCopiar.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    miCopiarActionPerformed(evt);
-                }
-            });
-            mNavegacion.add(miCopiar);
-
-            barraMenu.add(mNavegacion);
-
-            setJMenuBar(barraMenu);
-
-            javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-            getContentPane().setLayout(layout);
-            layout.setHorizontalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(lblGardado, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jScrollPane1)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(btbArriba)
-                                .addComponent(btbAbaixo)))
-                        .addComponent(jSeparator1)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 359, Short.MAX_VALUE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(lblEspanhol, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 58, Short.MAX_VALUE)
-                                .addComponent(lblAleman, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(lblFrances, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(lblIngles, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(lblCodigo, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txtIngles)
-                                .addComponent(txtFrances)
-                                .addComponent(txtAleman)
-                                .addComponent(txtEspanhol)
-                                .addComponent(txtCodigo)))
-                        .addGroup(layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(lblOrixe)
-                                .addComponent(lblDestino))
-                            .addGap(18, 18, 18)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txtRutaOrixe)
-                                .addComponent(txtRutaDestino))))
-                    .addContainerGap())
-            );
-            layout.setVerticalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lblOrixe)
-                        .addComponent(txtRutaOrixe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lblDestino)
-                        .addComponent(txtRutaDestino, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
-                        .addComponent(jScrollPane2))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lblCodigo)
-                        .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lblIngles)
-                        .addComponent(txtIngles, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lblFrances)
-                        .addComponent(txtFrances, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lblAleman)
-                        .addComponent(txtAleman, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lblEspanhol)
-                        .addComponent(txtEspanhol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(layout.createSequentialGroup()
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblGardado, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btbArriba)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btbAbaixo))
-                        .addComponent(jScrollPane1))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(lblGardado))
-            );
+                            .addComponent(btbAbaixo)))
+                    .addComponent(jSeparator1)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 359, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(lblEspanhol, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 58, Short.MAX_VALUE)
+                            .addComponent(lblAleman, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lblFrances, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lblIngles, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lblCodigo, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtIngles)
+                            .addComponent(txtFrances)
+                            .addComponent(txtAleman)
+                            .addComponent(txtEspanhol)
+                            .addComponent(txtCodigo)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblOrixe)
+                            .addComponent(lblDestino))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtRutaOrixe)
+                            .addComponent(txtRutaDestino))))
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblOrixe)
+                    .addComponent(txtRutaOrixe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblDestino)
+                    .addComponent(txtRutaDestino, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblCodigo)
+                    .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblIngles)
+                    .addComponent(txtIngles, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblFrances)
+                    .addComponent(txtFrances, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblAleman)
+                    .addComponent(txtAleman, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblEspanhol)
+                    .addComponent(txtEspanhol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btbArriba)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btbAbaixo))
+                    .addComponent(jScrollPane1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblGardado))
+        );
 
-            pack();
-        }// </editor-fold>//GEN-END:initComponents
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
 
     private String rutaDirectorioOrixe;
     private String rutaDirectorioDestino;
     private ListaFicheiros lf;
+    private ListaCodigos lc;
     private FicheiroCSVOrixe ficheiroOrixeActivo;
     private FicheiroDestino ficheiroDestinoActivo;
     int indexActual = -1;
-    boolean gardado = true;
+    boolean cambiando = false;
+    boolean traducionTocada = false;
     
     private void btbArribaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btbArribaActionPerformed
         listCodigos.setSelectedIndex(listCodigos.getSelectedIndex()-1);
@@ -379,14 +374,15 @@ public class Interface extends javax.swing.JFrame {
         if(getRutaDirectorioDestino() != null) {
             ficheiroDestinoActivo = lf.getFicheiroDestino(listFicheiros.getSelectedIndex());
         }
-        listCodigos.setModel(new ListaCodigos(ficheiroOrixeActivo));
+        lc = new ListaCodigos(ficheiroOrixeActivo);
+        listCodigos.setModel(lc);
     }//GEN-LAST:event_listFicheirosValueChanged
 
     private void listCodigosValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listCodigosValueChanged
         boolean g;
         int index = listCodigos.getSelectedIndex();
         //Gárdase a tradución
-        if(indexActual != -1 && txtTraducion.isEnabled()) {
+        if(indexActual != -1 && txtTraducion.isEnabled() && traducionTocada) {
             ficheiroDestinoActivo.setTraducion(indexActual, txtTraducion.getText());
         }
         
@@ -402,9 +398,9 @@ public class Interface extends javax.swing.JFrame {
             txtEspanhol.setText(ficheiroOrixeActivo.lerCadea(index,
                     FicheiroCSVOrixe.idiomaBase.ESPANHOL));
             if(txtTraducion.isEnabled()) {
-                g = isGardado();
+                cambiando = true;
                 txtTraducion.setText(ficheiroDestinoActivo.getCadea(index));
-                setGardado(g);
+                cambiando = false;
             }
         }
         else {
@@ -457,6 +453,7 @@ public class Interface extends javax.swing.JFrame {
                 lf.cargarFicheirosDestino(directorio);
                 txtTraducion.setEnabled(true);
                 miCopiar.setEnabled(true);
+                mostrarEstadoGardado();
 
             }
         } catch (IOException ex) {
@@ -488,6 +485,10 @@ public class Interface extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_formWindowClosing
 
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        Configuracion.cargarConfiguracion();
+    }//GEN-LAST:event_formWindowOpened
+
     public String getRutaDirectorioOrixe() {
         return rutaDirectorioOrixe;
     }
@@ -496,7 +497,9 @@ public class Interface extends javax.swing.JFrame {
         this.rutaDirectorioOrixe = rutaDirectorioOrixe;
         setRutaDirectorioDestino(null);
         txtRutaOrixe.setText(rutaDirectorioOrixe);
-        Configuracion.setRutaOrixe(rutaDirectorioOrixe);
+        if(rutaDirectorioOrixe != null) {
+            Configuracion.setRutaOrixe(rutaDirectorioOrixe);
+        }
     }
 
     public String getRutaDirectorioDestino() {
@@ -507,32 +510,82 @@ public class Interface extends javax.swing.JFrame {
         if(this.rutaDirectorioDestino != null) {
             //Xa se escolleu un directorio de destino
             confirmarGardado();
-            Configuracion.setRutaDestino(rutaDirectorioDestino);
         }
         else {
             
         }
         this.rutaDirectorioDestino = rutaDirectorioDestino;
         txtRutaDestino.setText(rutaDirectorioDestino);
-        setGardado(true);
+        if(rutaDirectorioDestino != null) {
+            Configuracion.setRutaDestino(rutaDirectorioDestino);
+        }
     }
 
-    public boolean isGardado() {
-        return gardado;
+    
+    public boolean senCambios() {
+        return numFicheirosCambiados() == 0;
     }
 
-    public void setGardado(boolean gardado) {
-        this.gardado = gardado;
-        if(gardado) {
+    public int numLinhasCambiadas() {
+        if(getFicheiroDestinoActivo() != null) {
+            return ficheiroDestinoActivo.getNumCambios();
+        }
+        else {
+            return 0;
+        }
+    }
+    
+    public int numFicheirosCambiados() {
+        if(lf != null) {
+            return lf.numFicheirosCambiados();
+        }
+        else {
+            return 0;
+        }
+    }
+
+    public void mostrarEstadoGardado() {
+        if(senCambios()) {
             lblGardado.setText("Sen cambios que gardar");
         }
         else {
             lblGardado.setText("Ficheiros modificados");
         }
     }
+    
+    public boolean isLinhaCambiada() {
+        if(getFicheiroDestinoActivo() != null) {
+            return getFicheiroDestinoActivo().haiCambios(indexActual);
+        }
+        else {
+            return false;
+        }
+    }
+
+    public FicheiroCSVOrixe getFicheiroOrixeActivo() {
+        return ficheiroOrixeActivo;
+    }
+
+    public void setFicheiroOrixeActivo(FicheiroCSVOrixe ficheiroOrixeActivo) {
+        this.ficheiroOrixeActivo = ficheiroOrixeActivo;
+    }
+
+    public FicheiroDestino getFicheiroDestinoActivo() {
+        return ficheiroDestinoActivo;
+    }
+
+    public void setFicheiroDestinoActivo(FicheiroDestino ficheiroDestinoActivo) {
+        this.ficheiroDestinoActivo = ficheiroDestinoActivo;
+    }
+    
+    void notificarCambioNaTraducion() {
+        if(!cambiando)
+            traducionTocada = true;
+    }
+    
 
     public void confirmarGardado() throws CancelarAccionExcepcion, IOException {
-        if(gardado) {
+        if(senCambios()) {
             return; //Xa está gardado
         }
         int ret = JOptionPane.showConfirmDialog(this, "Desexa gardar os cambios realizados?",
@@ -546,11 +599,11 @@ public class Interface extends javax.swing.JFrame {
     }
     
     public void gardarDatos() throws IOException {
-        if(indexActual != -1 && txtTraducion.isEnabled()) {
+        if(indexActual != -1 && txtTraducion.isEnabled() && traducionTocada) {
             ficheiroDestinoActivo.setTraducion(indexActual, txtTraducion.getText());
         }
         lf.gardarDatos();
-        setGardado(true);
+        mostrarEstadoGardado();
     }
     
     /**
@@ -570,8 +623,9 @@ public class Interface extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Interface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(InterfaceTradutor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
         
         //</editor-fold>
@@ -580,7 +634,7 @@ public class Interface extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new Interface().setVisible(true);
+                new InterfaceTradutor().setVisible(true);
             }
         });
     }
@@ -619,6 +673,7 @@ public class Interface extends javax.swing.JFrame {
     private javax.swing.JTextField txtRutaOrixe;
     private javax.swing.JTextArea txtTraducion;
     // End of variables declaration//GEN-END:variables
+
 
 }
 
@@ -694,13 +749,26 @@ class ListaFicheiros implements ListModel {
             File f = new File(destino, orixe.getNome());
             if(f.exists()) {
                 //Tomamos o destino como "orixe" para cargar os datos que xa teña
-                ficheirosDestino.add(new FicheiroDestino(new FicheiroCSVOrixe(f), f));
+                ficheirosDestino.add(new FicheiroDestino(f));
             }
             else {
                 //Tomamos o orixe como "molde" por defecto
-                ficheirosDestino.add(new FicheiroDestino(orixe, f));
+                ficheirosDestino.add(new FicheiroDestino(orixe.getFicheiro(), f));
             }
         }
+    }
+
+    int numFicheirosCambiados() {
+        int ret = 0;
+        if(ficheirosDestino == null) {
+            return 0;
+        }
+        for(FicheiroDestino f : ficheirosDestino) {
+            if(f.getNumCambios() > 0) {
+                ret++;
+            }
+        }
+        return ret;
     }
     
 }
@@ -735,4 +803,28 @@ class ListaCodigos implements ListModel {
         listener.remove(l);
     }
     
+}
+
+class CampoTraducionListener implements DocumentListener {
+
+    InterfaceTradutor pai;
+    
+    CampoTraducionListener(InterfaceTradutor pai) {
+    this.pai = pai;
+    }
+    
+    @Override
+    public void insertUpdate(DocumentEvent e) {
+        pai.notificarCambioNaTraducion();
+    }
+
+    @Override
+    public void removeUpdate(DocumentEvent e) {
+        pai.notificarCambioNaTraducion();
+    }
+
+    @Override
+    public void changedUpdate(DocumentEvent e) {
+        pai.notificarCambioNaTraducion();
+    }
 }

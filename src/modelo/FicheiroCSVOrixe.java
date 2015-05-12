@@ -9,9 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -23,23 +21,18 @@ public class FicheiroCSVOrixe extends FicheiroCSVAbstracto {
     protected List<CadeaTraducionOrixe> cadeas;
     
     public FicheiroCSVOrixe(File ficheiro) throws FileNotFoundException, IOException {
-        this.ficheiro = ficheiro;
-        nome = ficheiro.getName();
-        BufferedReader buffer = new BufferedReader(
-                new InputStreamReader(
-                        new DataInputStream(
-                                new FileInputStream(ficheiro)),Charset.forName("ISO-8859-1")));
-        String fila;
         cadeas = new ArrayList<>();
-        while((fila = buffer.readLine()) != null) {
-            String[] split = fila.split(getDelim());
-            cadeas.add(new CadeaTraducionOrixe(split[0],split[1],split[2],split[3],split[5]));
+        for(String l : lerCadeasDendeFicheiro(ficheiro)) {
+            cadeas.add(new CadeaTraducionOrixe(l));
         }
-        buffer.close();
     }
     
     public String lerCadea(int index, idiomaBase l) {
         return cadeas.get(index).getIdioma(l);
+    }
+    
+    public String lerCadea(int index) {
+        return cadeas.toString();
     }
     
     public String lerCodigo(int index) {
@@ -55,6 +48,10 @@ public class FicheiroCSVOrixe extends FicheiroCSVAbstracto {
     public int getSize() {
         return cadeas.size();
     }
+
+    public File getFicheiro() {
+        return ficheiro;
+    }
     
     public enum idiomaBase {
             POR_DEFECTO, FRANCES, ALEMAN, ESPANHOL;
@@ -63,31 +60,57 @@ public class FicheiroCSVOrixe extends FicheiroCSVAbstracto {
 }
 
 class CadeaTraducionOrixe extends CadeaTraducion {
-    final String ingles, frances, aleman, espanhol;
 
-    
-    public CadeaTraducionOrixe(String codigo, String ingles, String frances, String aleman, String espanhol) {
-        this.codigo = codigo;
-        this.ingles = ingles;
-        this.frances = frances;
-        this.aleman = aleman;
-        this.espanhol = espanhol;
+    CadeaTraducionOrixe(String cadea) {
+        super.CadeaTraducion(cadea);
     }
-
 
     public String getIdioma(FicheiroCSVOrixe.idiomaBase i) {
         switch(i) {
             case POR_DEFECTO:
-                return ingles;
+                return getIngles();
             case FRANCES:
-                return frances;
+                return getFrances();
             case ALEMAN:
-                return aleman;
+                return getAleman();
             case ESPANHOL:
-                return espanhol;
+                return getEspanhol();
             default:
-                return ingles;
+                return getIngles();
         }
+    }
+
+    public String getIngles() {
+        return traducions.get(1);
+    }
+
+    public void setIngles(String ingles) {
+        traducions.set(0, ingles);
+    }
+
+    public String getFrances() {
+        return traducions.get(1);
+    }
+
+    public void setFrances(String frances) {
+        traducions.set(1, frances);
+    }
+
+    public String getAleman() {
+        return traducions.get(2);
+    }
+
+    public void setAleman(String aleman) {
+        traducions.set(2, aleman);
+
+    }
+
+    public String getEspanhol() {
+        return traducions.get(4);
+    }
+
+    public void setEspanhol(String espanhol) {
+        traducions.set(4, espanhol);
     }
 
 }

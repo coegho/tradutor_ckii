@@ -86,6 +86,7 @@
     <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
   </SyntheticProperties>
   <Events>
+    <EventHandler event="windowOpened" listener="java.awt.event.WindowListener" parameters="java.awt.event.WindowEvent" handler="formWindowOpened"/>
     <EventHandler event="windowClosing" listener="java.awt.event.WindowListener" parameters="java.awt.event.WindowEvent" handler="formWindowClosing"/>
   </Events>
   <AuxValues>
@@ -254,7 +255,7 @@
             <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtTraducionKeyPressed"/>
           </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="txtTraducion.getDocument().addDocumentListener(new DocumentListener() { &#xa;@Override&#xa;public void changedUpdate(DocumentEvent e) {&#xa;setGardado(false);&#xa;}&#xa;public void removeUpdate(DocumentEvent e) {&#xa;setGardado(false);&#xa;}&#xa;public void insertUpdate(DocumentEvent e) {&#xa;setGardado(false);&#xa;}});"/>
+            <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="txtTraducion.getDocument().addDocumentListener(new CampoTraducionListener(this));"/>
           </AuxValues>
         </Component>
       </SubComponents>
