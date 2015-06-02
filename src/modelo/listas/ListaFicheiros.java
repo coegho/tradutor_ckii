@@ -5,12 +5,15 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.ListModel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
-import modelo.FicheiroCSVOrixe;
-import modelo.FicheiroDestino;
+import modelo.ficheiros.FicheiroCSVOrixe;
+import modelo.ficheiros.FicheiroCSVDestino;
 
 /**
  *
@@ -18,9 +21,12 @@ import modelo.FicheiroDestino;
  */
 public class ListaFicheiros implements ListModel {
 
+    private File directorioOrixe;
     private File directorioDestino;
-    private List<FicheiroCSVOrixe> ficheirosOrixe;
-    private List<FicheiroDestino> ficheirosDestino;
+    private List<String> nomesFicheirosOrixe;
+    private List<String> nomesFicheirosDestino;
+    private Map<String, FicheiroCSVOrixe> ficheirosOrixe;
+    private Map<String, FicheiroCSVDestino> ficheirosDestino;
     private final List<ListDataListener> listener = new ArrayList<>();
 
     /**
@@ -30,19 +36,19 @@ public class ListaFicheiros implements ListModel {
         
     }
 
-    public void setFicheirosOrixe(List<FicheiroCSVOrixe> ficheirosOrixe) {
+    public void setFicheirosOrixe(Map<String, FicheiroCSVOrixe> ficheirosOrixe) {
         this.ficheirosOrixe = ficheirosOrixe;
-        for(ListDataListener l : listener) {
-            l.contentsChanged(new ListDataEvent(this,
-                    ListDataEvent.CONTENTS_CHANGED,0,ficheirosOrixe.size()));
-        }
     }
     /**
      *
      * @param ficheirosDestino
      */
-    public void setFicheirosDestino(List<FicheiroDestino> ficheirosDestino) {
+    public void setFicheirosDestino(Map<String, FicheiroCSVDestino> ficheirosDestino) {
         this.ficheirosDestino = ficheirosDestino;
+        for(ListDataListener l : listener) {
+            l.contentsChanged(new ListDataEvent(this,
+                    ListDataEvent.CONTENTS_CHANGED,0,ficheirosDestino.size()));
+        }
     }
     
 
@@ -52,7 +58,7 @@ public class ListaFicheiros implements ListModel {
      * @return
      */
     public FicheiroCSVOrixe getFicheiroOrixe(int index) {
-        return ficheirosOrixe.get(index);
+        return ficheirosOrixe.get(nomesFicheirosOrixe.get(index));
     }
 
     /**
@@ -60,8 +66,8 @@ public class ListaFicheiros implements ListModel {
      * @param index
      * @return
      */
-    public FicheiroDestino getFicheiroDestino(int index) {
-        return ficheirosDestino.get(index);
+    public FicheiroCSVDestino getFicheiroDestino(int index) {
+        return ficheirosDestino.get(nomesFicheirosDestino.get(index));
     }
 
     /**
@@ -79,24 +85,40 @@ public class ListaFicheiros implements ListModel {
     public File getDirectorioDestino() {
         return directorioDestino;
     }
+    
+        /**
+     *
+     * @param directorioOrixe
+     */
+    public void setDirectorioOrixe(File directorioOrixe) {
+        this.directorioOrixe = directorioOrixe;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public File getDirectorioOrixe() {
+        return directorioOrixe;
+    }
 
     
     /**
      *
-     * @param d
      * @return
      */
-    public List<String> compararDirectorio(File d) {
+    public List<String> compararDirectorios() {
         List<String> saida = new ArrayList<>();
-        List<String> nomesFicheiros = Arrays.asList(d.list(new FilenameFilter() {
+        List<String> nomesFicheiros = 
+                Arrays.asList(directorioDestino.list(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
                 return name.toLowerCase().endsWith(".csv");
             }
         }));
-        for (FicheiroCSVOrixe csv : ficheirosOrixe) {
-            if (!nomesFicheiros.contains(csv.getNome())) {
-                saida.add(csv.getNome());
+        for (String f : ficheirosOrixe.keySet()) {
+            if (!nomesFicheiros.contains(ficheirosOrixe.get(f).getNome())) {
+                saida.add(ficheirosOrixe.get(f).getNome());
             }
         }
         return saida;
@@ -107,15 +129,15 @@ public class ListaFicheiros implements ListModel {
      * @throws IOException
      */
     public void gardarDatos() throws IOException {
-        for (FicheiroDestino f : ficheirosDestino) {
-            f.escribirDatos();
+        for (String f : ficheirosDestino.keySet()) {
+            ficheirosDestino.get(f).escribirDatos();
         }
     }
 
     @Override
     public int getSize() {
-        if(ficheirosOrixe != null) {
-            return ficheirosOrixe.size();
+        if(ficheirosDestino != null) {
+            return ficheirosDestino.size();
         }
         else {
             return 0;
@@ -124,7 +146,7 @@ public class ListaFicheiros implements ListModel {
 
     @Override
     public Object getElementAt(int index) {
-        return ficheirosOrixe.get(index).getNome();
+        return ficheirosDestino.get(nomesFicheirosDestino.get(index)).getNome();
     }
 
     @Override
@@ -137,24 +159,66 @@ public class ListaFicheiros implements ListModel {
         listener.remove(l);
     }
 
+    public void cargarFicheirosOrixe(File orixe) throws IOException {
+        setDirectorioOrixe(orixe);
+        if (orixe.isDirectory()) {
+            File[] ficheiros = orixe.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return name.toLowerCase().endsWith(".csv");
+                }
+            });
+            HashMap<String, FicheiroCSVOrixe> csv = new HashMap<>();
+            nomesFicheirosOrixe = new ArrayList<>();
+            for (File f : ficheiros) {
+                csv.put(f.getName(), new FicheiroCSVOrixe(f));
+                nomesFicheirosOrixe.add(f.getName());
+            }
+            setFicheirosOrixe(csv);
+            Collections.sort(nomesFicheirosOrixe);
+        }
+    }
+    
     /**
      *
      * @param destino
      * @throws IOException
      */
     public void cargarFicheirosDestino(File destino) throws IOException {
-        directorioDestino = destino;
-        ficheirosDestino = new ArrayList<>();
-        for (FicheiroCSVOrixe orixe : ficheirosOrixe) {
-            File f = new File(destino, orixe.getNome());
-            if (f.exists()) {
-                //Tomamos o destino como "orixe" para cargar os datos que xa teña
-                ficheirosDestino.add(new FicheiroDestino(f));
-            } else {
-                //Tomamos o orixe como "molde" por defecto
-                ficheirosDestino.add(new FicheiroDestino(orixe.getFicheiro(), f));
+        setDirectorioDestino(destino);
+        
+        if (destino.isDirectory()) {
+            File[] ficheiros = destino.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return name.toLowerCase().endsWith(".csv");
+                }
+            });
+            HashMap<String, FicheiroCSVDestino> csv = new HashMap<>();
+            nomesFicheirosDestino = new ArrayList<>();
+            
+            for (File f : ficheiros) {
+                csv.put(f.getName(), new FicheiroCSVDestino(f));
+                nomesFicheirosDestino.add(f.getName());
             }
+            
+            if(ficheirosOrixe != null) {
+                //Engádense os ficheiros que faltan
+                for(String f : ficheirosOrixe.keySet()) {
+                    if(!nomesFicheirosDestino.contains(f)) {
+                        csv.put(f, new FicheiroCSVDestino(ficheirosOrixe.get(f).getFicheiro(),new File(directorioDestino, f)));
+                        nomesFicheirosDestino.add(f);
+                    }
+                }
+            }
+            
+            setFicheirosDestino(csv);
+            Collections.sort(nomesFicheirosDestino);
         }
+    }
+    
+    public void recargarDestino() throws IOException {
+        cargarFicheirosDestino(getDirectorioDestino());
     }
 
     /**
@@ -166,8 +230,8 @@ public class ListaFicheiros implements ListModel {
         if (ficheirosDestino == null) {
             return 0;
         }
-        for (FicheiroDestino f : ficheirosDestino) {
-            if (f.getNumCambios() > 0) {
+        for (String f : ficheirosDestino.keySet()) {
+            if (ficheirosDestino.get(f).getNumCambios() > 0) {
                 ret++;
             }
         }

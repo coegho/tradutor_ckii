@@ -1,4 +1,4 @@
-package modelo;
+package modelo.ficheiros;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -51,6 +51,7 @@ public class FicheiroCSVOrixe extends FicheiroCSVAbstracto {
      * @param index
      * @return
      */
+    @Override
     public String lerCodigo(int index) {
         if (index >= 0 && index < cadeas.size()) {
             return cadeas.get(index).getCodigo();
@@ -63,6 +64,7 @@ public class FicheiroCSVOrixe extends FicheiroCSVAbstracto {
      *
      * @return
      */
+    @Override
     public int getSize() {
         return cadeas.size();
     }

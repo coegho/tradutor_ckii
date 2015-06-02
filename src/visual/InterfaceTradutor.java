@@ -5,6 +5,8 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFileChooser;
@@ -12,8 +14,8 @@ import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import modelo.Configuracion;
-import modelo.FicheiroCSVOrixe;
-import modelo.FicheiroDestino;
+import modelo.ficheiros.FicheiroCSVOrixe;
+import modelo.ficheiros.FicheiroCSVDestino;
 import modelo.listas.ListaCodigos;
 import modelo.listas.ListaFicheiros;
 
@@ -187,7 +189,6 @@ public class InterfaceTradutor extends javax.swing.JFrame {
 
         miDestino.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_MASK));
         miDestino.setText("Escoller directorio destino...");
-        miDestino.setEnabled(false);
         miDestino.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 miDestinoActionPerformed(evt);
@@ -197,6 +198,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
 
         miGardar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
         miGardar.setText("Gardar todos os cambios");
+        miGardar.setEnabled(false);
         miGardar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 miGardarActionPerformed(evt);
@@ -330,7 +332,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
     private ListaFicheiros lf;
     private ListaCodigos lc;
     private FicheiroCSVOrixe ficheiroOrixeActivo;
-    private FicheiroDestino ficheiroDestinoActivo;
+    private FicheiroCSVDestino ficheiroDestinoActivo;
     int indexActual = -1;
     boolean cambiando = false;
     boolean traducionTocada = false;
@@ -350,27 +352,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         if (dialEscollerFicheiro.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             directorio = dialEscollerFicheiro.getSelectedFile();
             try {
-                if (directorio.isDirectory()) {
-                    File[] ficheiros = directorio.listFiles(new FilenameFilter() {
-                        @Override
-                        public boolean accept(File dir, String name) {
-                            return name.toLowerCase().endsWith(".csv");
-                        }
-                    });
-                    List<FicheiroCSVOrixe> csv = new ArrayList<>();
-                    for (File f : ficheiros) {
-                        csv.add(new FicheiroCSVOrixe(f));
-                    }
-
-                    setRutaDirectorioOrixe(directorio.getAbsolutePath());
-                    getListaFicheiros().setFicheirosOrixe(csv);
-                    txtTraducion.setEnabled(false);
-                    miDestino.setEnabled(true);
-                    miCopiar.setEnabled(false);
-                    miRestaurarTraducion.setEnabled(false);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Débese escoller un directorio.");
-                }
+                asignarDirectorioOrixe(directorio);
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(this, "Non se puido abrir o ficheiro.");
             } catch (CancelarAccionExcepcion ex) {
@@ -384,9 +366,11 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         if (listFicheiros.getSelectedIndex() < 0) { //non hai ficheiro seleccionado
             return;
         }
-        ficheiroOrixeActivo = getListaFicheiros().getFicheiroOrixe(listFicheiros.getSelectedIndex());
+        if (getRutaDirectorioOrixe() != null) {
+            setFicheiroOrixeActivo(getListaFicheiros().getFicheiroOrixe(listFicheiros.getSelectedIndex()));
+        }
         if (getRutaDirectorioDestino() != null) {
-            ficheiroDestinoActivo = getListaFicheiros().getFicheiroDestino(listFicheiros.getSelectedIndex());
+            setFicheiroDestinoActivo(getListaFicheiros().getFicheiroDestino(listFicheiros.getSelectedIndex()));
         }
         listCodigosValueChanged(evt);
     }//GEN-LAST:event_listFicheirosValueChanged
@@ -450,23 +434,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         try {
             if (dialEscollerFicheiro.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 File directorio = dialEscollerFicheiro.getSelectedFile();
-                List<String> faltantes = getListaFicheiros().compararDirectorio(directorio);
-                if (faltantes.size() > 0) {
-                    //Ao directorio fáltalle algún ficheiro
-                    int ret = JOptionPane.showConfirmDialog(this,
-                            "O directorio destino non contén todos os ficheiros necesarios. "
-                            + "Desexa crealos agora?", "Aviso",
-                            JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-                    if (ret == JOptionPane.YES_OPTION) {
-                        faltantes.clear();
-                    } else {
-                        throw new CancelarAccionExcepcion();
-                    }
-                }
-
-                setRutaDirectorioDestino(directorio.getAbsolutePath());
-                getListaFicheiros().cargarFicheirosDestino(directorio);
-                mostrarEstadoGardado();
+                asignarDirectorioDestino(directorio);
 
             }
         } catch (IOException ex) {
@@ -512,6 +480,50 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         traducionTocada = false;
     }//GEN-LAST:event_miRestaurarTraducionActionPerformed
 
+    private void asignarDirectorioOrixe(File directorio) throws IOException, CancelarAccionExcepcion {
+        confirmarGardado();
+        
+        if (directorio.isDirectory()) {
+            getListaFicheiros().cargarFicheirosOrixe(directorio);
+            setRutaDirectorioOrixe(directorio.getAbsolutePath());
+            miRestaurarTraducion.setEnabled(false);
+        } else {
+            JOptionPane.showMessageDialog(this, "Débese escoller un directorio.");
+        }
+    }
+    
+    private void asignarDirectorioDestino(File directorio) throws CancelarAccionExcepcion, IOException {
+        confirmarGardado();
+        if (directorio.isDirectory()) {
+            setRutaDirectorioDestino(directorio.getAbsolutePath());
+            getListaFicheiros().cargarFicheirosDestino(directorio);
+            mostrarEstadoGardado();
+        } else {
+            JOptionPane.showMessageDialog(this, "Débese escoller un directorio.");
+        }
+    }
+    
+    public void compararDirectorios() throws IOException, CancelarAccionExcepcion {
+        List<String> faltantes = getListaFicheiros().compararDirectorios();
+        if (faltantes.size() > 0) {
+            //Ao directorio fáltalle algún ficheiro
+            int ret = JOptionPane.showConfirmDialog(this,
+                    "O directorio destino non contén todos os ficheiros necesarios. "
+                    + "Desexa crealos agora?", "Aviso",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            switch(ret) {
+                case JOptionPane.YES_OPTION:
+                    getListaFicheiros().recargarDestino();
+                    break;
+                case JOptionPane.NO_OPTION:
+                    //Non se fai nada
+                    break;
+                case JOptionPane.CANCEL_OPTION:
+                    throw new CancelarAccionExcepcion();
+            }
+        }
+    }
+    
     /**
      *
      * @return
@@ -528,7 +540,6 @@ public class InterfaceTradutor extends javax.swing.JFrame {
      */
     public void setRutaDirectorioOrixe(String rutaDirectorioOrixe) throws CancelarAccionExcepcion, IOException {
         this.rutaDirectorioOrixe = rutaDirectorioOrixe;
-        setRutaDirectorioDestino(null);
         txtRutaOrixe.setText(rutaDirectorioOrixe);
         if (rutaDirectorioOrixe != null) {
             Configuracion.setRutaOrixe(rutaDirectorioOrixe);
@@ -550,12 +561,6 @@ public class InterfaceTradutor extends javax.swing.JFrame {
      * @throws IOException
      */
     public void setRutaDirectorioDestino(String rutaDirectorioDestino) throws CancelarAccionExcepcion, IOException {
-        if (this.rutaDirectorioDestino != null) {
-            //Xa se escolleu un directorio de destino
-            confirmarGardado();
-        } else {
-
-        }
         this.rutaDirectorioDestino = rutaDirectorioDestino;
         txtRutaDestino.setText(rutaDirectorioDestino);
         if (rutaDirectorioDestino != null) {
@@ -630,7 +635,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
      *
      * @return
      */
-    public FicheiroDestino getFicheiroDestinoActivo() {
+    public FicheiroCSVDestino getFicheiroDestinoActivo() {
         return ficheiroDestinoActivo;
     }
 
@@ -638,7 +643,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
      *
      * @param ficheiroDestinoActivo
      */
-    public void setFicheiroDestinoActivo(FicheiroDestino ficheiroDestinoActivo) {
+    public void setFicheiroDestinoActivo(FicheiroCSVDestino ficheiroDestinoActivo) {
         this.ficheiroDestinoActivo = ficheiroDestinoActivo;
     }
 
@@ -657,7 +662,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
      * @throws IOException
      */
     public void confirmarGardado() throws CancelarAccionExcepcion, IOException {
-        if (indexActual != -1 && txtTraducion.isEnabled() && traducionTocada) {
+        if (indexActual != -1 && (getRutaDirectorioDestino() != null) && traducionTocada) {
             ficheiroDestinoActivo.setTraducion(indexActual, txtTraducion.getText());
         }
         if (senCambios()) {

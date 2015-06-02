@@ -21,6 +21,14 @@ import java.util.logging.Logger;
 public class Configuracion {
     private static String rutaOrixe;
     private static String rutaDestino;
+    
+    /**
+     *
+     * @return
+     */
+    public static String getRutaFicheiroConfiguracion() {
+        return System.getProperty("user.home") + File.separator + "rutas_trad_ckii.txt";
+    }
 
     /**
      *
@@ -66,7 +74,7 @@ public class Configuracion {
     public static void cargarConfiguracion() {
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(
-                    new DataInputStream(new FileInputStream(new File("conf.txt")))));
+                    new DataInputStream(new FileInputStream(new File(getRutaFicheiroConfiguracion())))));
             setRutaOrixe(br.readLine());
             setRutaDestino(br.readLine());
             br.close();
@@ -81,7 +89,7 @@ public class Configuracion {
     public static void gardarConfiguracion() {
         try {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
-                    new DataOutputStream(new FileOutputStream(new File("conf.txt"), false))));
+                    new DataOutputStream(new FileOutputStream(new File(getRutaFicheiroConfiguracion()), false))));
             bw.write(getRutaOrixe());
             bw.newLine();
             bw.write(getRutaDestino());

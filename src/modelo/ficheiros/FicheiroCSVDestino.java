@@ -1,4 +1,4 @@
-package modelo;
+package modelo.ficheiros;
 
 import java.io.File;
 import java.io.*;
@@ -10,7 +10,7 @@ import java.util.List;
  *
  * @author coegho
  */
-public class FicheiroDestino extends FicheiroCSVAbstracto {
+public class FicheiroCSVDestino extends FicheiroCSVAbstracto {
 
     protected List<CadeaTraducionDestino> cadeas;
 
@@ -19,7 +19,7 @@ public class FicheiroDestino extends FicheiroCSVAbstracto {
      * @param ficheiro
      * @throws IOException
      */
-    public FicheiroDestino(File ficheiro) throws IOException {
+    public FicheiroCSVDestino(File ficheiro) throws IOException {
         this.ficheiro = ficheiro;
         cadeas = new ArrayList<>();
         for (String l : lerCadeasDendeFicheiro(ficheiro)) {
@@ -33,7 +33,7 @@ public class FicheiroDestino extends FicheiroCSVAbstracto {
      * @param ficheiro
      * @throws IOException
      */
-    public FicheiroDestino(File orixe, File ficheiro) throws IOException {
+    public FicheiroCSVDestino(File orixe, File ficheiro) throws IOException {
         this.ficheiro = ficheiro;
         cadeas = new ArrayList<>();
         for (String l : lerCadeasDendeFicheiro(orixe)) {
@@ -41,6 +41,21 @@ public class FicheiroDestino extends FicheiroCSVAbstracto {
         }
     }
 
+    
+    /**
+     *
+     * @param index
+     * @return
+     */
+    @Override
+    public String lerCodigo(int index) {
+        if (index >= 0 && index < cadeas.size()) {
+            return cadeas.get(index).getCodigo();
+        } else {
+            throw new ArrayIndexOutOfBoundsException(index);
+        }
+    }
+    
     /**
      *
      * @param index
@@ -116,6 +131,16 @@ public class FicheiroDestino extends FicheiroCSVAbstracto {
     public String lerCadea(int index) {
         return cadeas.get(index).toString();
     }
+    
+    /**
+     *
+     * @return
+     */
+    @Override
+    public int getSize() {
+        return cadeas.size();
+    }
+
 }
 
 class CadeaTraducionDestino extends CadeaTraducion {

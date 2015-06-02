@@ -1,4 +1,4 @@
-package modelo;
+package modelo.ficheiros;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -65,5 +65,17 @@ public abstract class FicheiroCSVAbstracto {
      * @return
      */
     public abstract String lerCadea(int index);
-
+    
+    /**
+     *
+     * @return
+     */
+    public abstract int getSize();
+    
+    /**
+     *
+     * @param index
+     * @return
+     */
+    public abstract String lerCodigo(int index);
 }

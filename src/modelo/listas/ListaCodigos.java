@@ -8,8 +8,8 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import modelo.FicheiroCSVOrixe;
-import modelo.FicheiroDestino;
+import modelo.ficheiros.FicheiroCSVOrixe;
+import modelo.ficheiros.FicheiroCSVDestino;
 
 /**
  *
@@ -18,7 +18,7 @@ import modelo.FicheiroDestino;
 public class ListaCodigos implements ListModel, ListSelectionListener {
 
     private FicheiroCSVOrixe ficheiroOrixe;
-    private FicheiroDestino ficheiroDestino;
+    private FicheiroCSVDestino ficheiroDestino;
     ListaFicheiros lf;
     private final List<ListDataListener> listener = new ArrayList<>();
 
@@ -37,32 +37,33 @@ public class ListaCodigos implements ListModel, ListSelectionListener {
 
     public void setFicheiroOrixe(FicheiroCSVOrixe ficheiroOrixe) {
         this.ficheiroOrixe = ficheiroOrixe;
-        for(ListDataListener l : listener) {
-                l.contentsChanged(new ListDataEvent(this,
-                    ListDataEvent.CONTENTS_CHANGED,0,ficheiroOrixe.getSize()));
-        }
+        
     }
 
-    public FicheiroDestino getFicheiroDestino() {
+    public FicheiroCSVDestino getFicheiroDestino() {
         return ficheiroDestino;
     }
 
-    public void setFicheiroDestino(FicheiroDestino ficheiroDestino) {
+    public void setFicheiroDestino(FicheiroCSVDestino ficheiroDestino) {
         this.ficheiroDestino = ficheiroDestino;
+        for(ListDataListener l : listener) {
+                l.contentsChanged(new ListDataEvent(this,
+                    ListDataEvent.CONTENTS_CHANGED,0,ficheiroDestino.getSize()));
+        }
     }
     
 
     @Override
     public int getSize() {
-        if(ficheiroOrixe != null) {
-            return ficheiroOrixe.getSize();
+        if(ficheiroDestino != null) {
+            return ficheiroDestino.getSize();
         }
         return 0;
     }
 
     @Override
     public Object getElementAt(int index) {
-        return ficheiroOrixe.lerCodigo(index);
+        return ficheiroDestino.lerCodigo(index);
     }
 
     @Override
@@ -79,10 +80,10 @@ public class ListaCodigos implements ListModel, ListSelectionListener {
     public void valueChanged(ListSelectionEvent e) {
         //Chámase cando cambia a lista de códigos
         JList list = (JList) e.getSource();
-        setFicheiroOrixe(lf.getFicheiroOrixe(list.getSelectedIndex()));
+        setFicheiroDestino(lf.getFicheiroDestino(list.getSelectedIndex()));
         for(ListDataListener l : listener) {
             l.contentsChanged(new ListDataEvent(this,
-                    ListDataEvent.CONTENTS_CHANGED,0,getFicheiroOrixe().getSize()));
+                    ListDataEvent.CONTENTS_CHANGED,0,getFicheiroDestino().getSize()));
         }
     }
 
