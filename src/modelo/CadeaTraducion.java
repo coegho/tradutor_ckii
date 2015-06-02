@@ -17,11 +17,19 @@ public abstract class CadeaTraducion {
      * @param cadea
      */
     public void CadeaTraducion(String cadea) {
+        construirDendeCadea(cadea);
+    }
+    
+    /**
+     *
+     * @param cadea
+     */
+    public void construirDendeCadea(String cadea) {
         traducions = Arrays.asList(cadea.split(";"));
         codigo = traducions.get(0);
         traducions = traducions.subList(1, traducions.size());
     }
-    
+            
     /**
      *
      * @return

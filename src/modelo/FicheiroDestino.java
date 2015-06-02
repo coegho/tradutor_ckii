@@ -11,8 +11,7 @@ import java.util.List;
  * @author coegho
  */
 public class FicheiroDestino extends FicheiroCSVAbstracto {
-    
-    
+
     protected List<CadeaTraducionDestino> cadeas;
 
     /**
@@ -23,11 +22,11 @@ public class FicheiroDestino extends FicheiroCSVAbstracto {
     public FicheiroDestino(File ficheiro) throws IOException {
         this.ficheiro = ficheiro;
         cadeas = new ArrayList<>();
-        for(String l : lerCadeasDendeFicheiro(ficheiro)) {
+        for (String l : lerCadeasDendeFicheiro(ficheiro)) {
             cadeas.add(new CadeaTraducionDestino(l));
         }
     }
-    
+
     /**
      *
      * @param orixe
@@ -37,11 +36,11 @@ public class FicheiroDestino extends FicheiroCSVAbstracto {
     public FicheiroDestino(File orixe, File ficheiro) throws IOException {
         this.ficheiro = ficheiro;
         cadeas = new ArrayList<>();
-        for(String l : lerCadeasDendeFicheiro(orixe)) {
+        for (String l : lerCadeasDendeFicheiro(orixe)) {
             cadeas.add(new CadeaTraducionDestino(l));
         }
     }
-    
+
     /**
      *
      * @param index
@@ -50,7 +49,7 @@ public class FicheiroDestino extends FicheiroCSVAbstracto {
     public void setTraducion(int index, String texto) {
         cadeas.get(index).setTraducion(texto);
     }
- 
+
     /**
      *
      * @param index
@@ -59,7 +58,7 @@ public class FicheiroDestino extends FicheiroCSVAbstracto {
     public String getTraducion(int index) {
         return cadeas.get(index).getTraducion();
     }
-    
+
     /**
      *
      * @param index
@@ -68,21 +67,21 @@ public class FicheiroDestino extends FicheiroCSVAbstracto {
     public void restaurarTraducion(int index, String cadeaOrixe) {
         cadeas.get(index).setTraducionsDendeCadea(cadeaOrixe);
     }
-   
+
     /**
      *
      * @return
      */
     public int getNumCambios() {
         int ret = 0;
-        for(CadeaTraducionDestino c : cadeas) {
-            if(c.haiCambios()) {
+        for (CadeaTraducionDestino c : cadeas) {
+            if (c.haiCambios()) {
                 ret++;
             }
         }
         return ret;
     }
-    
+
     /**
      *
      * @param index
@@ -98,24 +97,29 @@ public class FicheiroDestino extends FicheiroCSVAbstracto {
      * @throws IOException
      */
     public void escribirDatos() throws FileNotFoundException, IOException {
-        if(getNumCambios() == 0) {
+        if (getNumCambios() == 0) {
             return;
         }
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
                 new DataOutputStream(new FileOutputStream(ficheiro, false)),
                 Charset.forName("ISO-8859-1")));
-        
-        for(CadeaTraducionDestino c : cadeas) {
+
+        for (CadeaTraducionDestino c : cadeas) {
             bw.write(c.toString());
             bw.newLine();
             c.aceptarCambios();
         }
         bw.close();
     }
+
+    @Override
+    public String lerCadea(int index) {
+        return cadeas.get(index).toString();
+    }
 }
 
-
 class CadeaTraducionDestino extends CadeaTraducion {
+    boolean houboCambios = false;
     String traducion;
 
     CadeaTraducionDestino(String cadea) {
@@ -123,37 +127,45 @@ class CadeaTraducionDestino extends CadeaTraducion {
     }
 
     public String getTraducion() {
-        if(haiCambios()) {
+        if (traducion != null) {
             return traducion;
-        }
-        else {
+        } else {
             return traducions.get(0);
         }
     }
-    
+
     public void setTraducionsDendeCadea(String cadea) {
-        this.CadeaTraducion(cadea);
+        if(this.toString().contentEquals(cadea)) { //xa está gardado así en disco
+            houboCambios = false;
+        }
+        else { //no disco está gardado doutra forma
+            construirDendeCadea(cadea);
+            houboCambios = true;
+        }
         traducion = null;
     }
 
     public void setTraducion(String traducion) {
-        this.traducion = traducion.replace(";",",").replace("\n"," ").
-                replace("\r","").trim();
+        this.traducion = traducion.replace(";", ",").replace("\n", " ").
+                replace("\r", "").trim();
+        houboCambios = true;
     }
-    
+
     public boolean haiCambios() {
-        return traducion != null;
+        return (traducion != null || houboCambios == true);
     }
-    
+
     @Override
     public String toString() {
         List<String> ret;
-        if(haiCambios()) {
+        if (traducion != null) { //Cadea xa traducida
             ret = new ArrayList<>();
-            ret.addAll(traducions);
-            ret.set(0, traducion);
-        }
-        else {
+            ret.add(getTraducion());
+            for (int i = 0; i < traducions.size() - 2; i++) {
+                ret.add("");
+            }
+            ret.add("x");
+        } else { //Cadea sen traducir
             ret = traducions;
         }
         return unirCadea(codigo, ret);

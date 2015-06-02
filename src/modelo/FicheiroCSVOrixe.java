@@ -33,7 +33,7 @@ public class FicheiroCSVOrixe extends FicheiroCSVAbstracto {
      * @param l
      * @return
      */
-    public String lerCadea(int index, idiomaBase l) {
+    public String lerTraducion(int index, idiomaBase l) {
         return cadeas.get(index).getIdioma(l);
     }
 
@@ -43,7 +43,7 @@ public class FicheiroCSVOrixe extends FicheiroCSVAbstracto {
      * @return
      */
     public String lerCadea(int index) {
-        return cadeas.toString();
+        return cadeas.get(index).toString();
     }
 
     /**

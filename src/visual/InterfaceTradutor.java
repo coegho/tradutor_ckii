@@ -6,17 +6,16 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.ListModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.ListDataListener;
 import modelo.Configuracion;
 import modelo.FicheiroCSVOrixe;
 import modelo.FicheiroDestino;
+import modelo.listas.ListaCodigos;
+import modelo.listas.ListaFicheiros;
 
 /**
  *
@@ -133,6 +132,8 @@ public class InterfaceTradutor extends javax.swing.JFrame {
             }
         });
         jScrollPane2.setViewportView(listFicheiros);
+        lf = new ListaFicheiros();
+        listFicheiros.setModel(lf);
 
         listCodigos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         listCodigos.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
@@ -141,6 +142,9 @@ public class InterfaceTradutor extends javax.swing.JFrame {
             }
         });
         jScrollPane3.setViewportView(listCodigos);
+        lc = new ListaCodigos(getListaFicheiros());
+        listCodigos.setModel(lc);
+        listFicheiros.addListSelectionListener(lc);
 
         txtCodigo.setEditable(false);
 
@@ -216,6 +220,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
 
         miRestaurarTraducion.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
         miRestaurarTraducion.setText("Restaurar tradución");
+        miRestaurarTraducion.setEnabled(false);
         miRestaurarTraducion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 miRestaurarTraducionActionPerformed(evt);
@@ -243,10 +248,6 @@ public class InterfaceTradutor extends javax.swing.JFrame {
                             .addComponent(btbAbaixo)))
                     .addComponent(jSeparator1)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 359, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(lblEspanhol, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 58, Short.MAX_VALUE)
                             .addComponent(lblAleman, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -267,7 +268,11 @@ public class InterfaceTradutor extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtRutaOrixe)
-                            .addComponent(txtRutaDestino))))
+                            .addComponent(txtRutaDestino)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 359, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -282,9 +287,9 @@ public class InterfaceTradutor extends javax.swing.JFrame {
                     .addComponent(txtRutaDestino, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 194, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3))
+                .addGap(4, 4, 4)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -329,40 +334,41 @@ public class InterfaceTradutor extends javax.swing.JFrame {
     int indexActual = -1;
     boolean cambiando = false;
     boolean traducionTocada = false;
-    
+
     private void btbArribaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btbArribaActionPerformed
-        listCodigos.setSelectedIndex(listCodigos.getSelectedIndex()-1);
+        listCodigos.setSelectedIndex(listCodigos.getSelectedIndex() - 1);
     }//GEN-LAST:event_btbArribaActionPerformed
 
     private void btbAbaixoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btbAbaixoActionPerformed
-        listCodigos.setSelectedIndex(listCodigos.getSelectedIndex()+1);
+        listCodigos.setSelectedIndex(listCodigos.getSelectedIndex() + 1);
     }//GEN-LAST:event_btbAbaixoActionPerformed
 
     private void miOrixeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miOrixeActionPerformed
         dialEscollerFicheiro.setCurrentDirectory(new File(Configuracion.getRutaOrixe()));
-        
+
         File directorio;
-        if(dialEscollerFicheiro.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+        if (dialEscollerFicheiro.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             directorio = dialEscollerFicheiro.getSelectedFile();
             try {
-                if(directorio.isDirectory()) {
-                   File[] ficheiros = directorio.listFiles(new FilenameFilter() {
-                       @Override
-                       public boolean accept(File dir, String name) {
-                           return name.toLowerCase().endsWith(".csv");
-                       }
-                   });
-                   List<FicheiroCSVOrixe> csv = new ArrayList<>();
-                   for(File f : ficheiros) {
-                       csv.add(new FicheiroCSVOrixe(f));
-                   }
-                   
-                   setRutaDirectorioOrixe(directorio.getAbsolutePath());
-                   lf = new ListaFicheiros(csv);
-                   listFicheiros.setModel(lf);
-                   miDestino.setEnabled(true);
-                }
-                else {
+                if (directorio.isDirectory()) {
+                    File[] ficheiros = directorio.listFiles(new FilenameFilter() {
+                        @Override
+                        public boolean accept(File dir, String name) {
+                            return name.toLowerCase().endsWith(".csv");
+                        }
+                    });
+                    List<FicheiroCSVOrixe> csv = new ArrayList<>();
+                    for (File f : ficheiros) {
+                        csv.add(new FicheiroCSVOrixe(f));
+                    }
+
+                    setRutaDirectorioOrixe(directorio.getAbsolutePath());
+                    getListaFicheiros().setFicheirosOrixe(csv);
+                    txtTraducion.setEnabled(false);
+                    miDestino.setEnabled(true);
+                    miCopiar.setEnabled(false);
+                    miRestaurarTraducion.setEnabled(false);
+                } else {
                     JOptionPane.showMessageDialog(this, "Débese escoller un directorio.");
                 }
             } catch (IOException ex) {
@@ -371,53 +377,59 @@ public class InterfaceTradutor extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Operación cancelada polo usuario.");
             }
         }
-        
+
     }//GEN-LAST:event_miOrixeActionPerformed
 
     private void listFicheirosValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listFicheirosValueChanged
-        ficheiroOrixeActivo = lf.getFicheiroOrixe(listFicheiros.getSelectedIndex());
-        if(getRutaDirectorioDestino() != null) {
-            ficheiroDestinoActivo = lf.getFicheiroDestino(listFicheiros.getSelectedIndex());
+        if (listFicheiros.getSelectedIndex() < 0) { //non hai ficheiro seleccionado
+            return;
         }
-        lc = new ListaCodigos(ficheiroOrixeActivo);
-        listCodigos.setModel(lc);
+        ficheiroOrixeActivo = getListaFicheiros().getFicheiroOrixe(listFicheiros.getSelectedIndex());
+        if (getRutaDirectorioDestino() != null) {
+            ficheiroDestinoActivo = getListaFicheiros().getFicheiroDestino(listFicheiros.getSelectedIndex());
+        }
+        listCodigosValueChanged(evt);
     }//GEN-LAST:event_listFicheirosValueChanged
 
     private void listCodigosValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listCodigosValueChanged
         boolean g;
         int index = listCodigos.getSelectedIndex();
         //Gárdase a tradución
-        if(indexActual != -1 && txtTraducion.isEnabled() && traducionTocada) {
-            ficheiroDestinoActivo.setTraducion(indexActual, txtTraducion.getText());
+        if (indexActual != -1 && txtTraducion.isEnabled() && traducionTocada) {
+            getFicheiroDestinoActivo().setTraducion(indexActual, txtTraducion.getText());
         }
-        
+
         //Cárgase a seguinte
-        if(index != -1) {
-            txtCodigo.setText(ficheiroOrixeActivo.lerCodigo(index));
-            txtIngles.setText(ficheiroOrixeActivo.lerCadea(index,
+        if (index != -1) {
+            txtCodigo.setText(getFicheiroOrixeActivo().lerCodigo(index));
+            txtIngles.setText(getFicheiroOrixeActivo().lerTraducion(index,
                     FicheiroCSVOrixe.idiomaBase.INGLES));
-            txtFrances.setText(ficheiroOrixeActivo.lerCadea(index,
+            txtFrances.setText(getFicheiroOrixeActivo().lerTraducion(index,
                     FicheiroCSVOrixe.idiomaBase.FRANCES));
-            txtAleman.setText(ficheiroOrixeActivo.lerCadea(index,
+            txtAleman.setText(getFicheiroOrixeActivo().lerTraducion(index,
                     FicheiroCSVOrixe.idiomaBase.ALEMAN));
-            txtEspanhol.setText(ficheiroOrixeActivo.lerCadea(index,
+            txtEspanhol.setText(getFicheiroOrixeActivo().lerTraducion(index,
                     FicheiroCSVOrixe.idiomaBase.ESPANHOL));
-            if(txtTraducion.isEnabled()) {
+            if (txtTraducion.isEnabled()) {
                 cambiando = true;
-                txtTraducion.setText(ficheiroDestinoActivo.getTraducion(index));
+                txtTraducion.setText(getFicheiroDestinoActivo().getTraducion(index));
                 cambiando = false;
             }
-        }
-        else {
+        } else {
             txtCodigo.setText("");
             txtIngles.setText("");
             txtFrances.setText("");
             txtAleman.setText("");
             txtEspanhol.setText("");
-            if(txtTraducion.isEnabled())
-                    txtTraducion.setText("");
+            if (txtTraducion.isEnabled()) {
+                txtTraducion.setText("");
+            }
         }
         indexActual = index;
+        traducionTocada = false;
+        txtTraducion.setEnabled(true);
+        miCopiar.setEnabled(true);
+        miRestaurarTraducion.setEnabled(true);
     }//GEN-LAST:event_listCodigosValueChanged
 
     private void txtFrancesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFrancesActionPerformed
@@ -425,39 +437,35 @@ public class InterfaceTradutor extends javax.swing.JFrame {
     }//GEN-LAST:event_txtFrancesActionPerformed
 
     private void txtTraducionKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTraducionKeyPressed
-        if(evt.getKeyCode() == KeyEvent.VK_PAGE_DOWN) {
-            listCodigos.setSelectedIndex(listCodigos.getSelectedIndex()+1);
-        }
-        else if(evt.getKeyCode() == KeyEvent.VK_PAGE_UP) {
-            listCodigos.setSelectedIndex(listCodigos.getSelectedIndex()-1);
+        if (evt.getKeyCode() == KeyEvent.VK_PAGE_DOWN) {
+            listCodigos.setSelectedIndex(listCodigos.getSelectedIndex() + 1);
+        } else if (evt.getKeyCode() == KeyEvent.VK_PAGE_UP) {
+            listCodigos.setSelectedIndex(listCodigos.getSelectedIndex() - 1);
         }
     }//GEN-LAST:event_txtTraducionKeyPressed
 
     private void miDestinoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miDestinoActionPerformed
         dialEscollerFicheiro.setCurrentDirectory(new File(Configuracion.getRutaDestino()));
-        
+
         try {
-            if(dialEscollerFicheiro.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            if (dialEscollerFicheiro.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 File directorio = dialEscollerFicheiro.getSelectedFile();
-                List<String> faltantes = lf.compararDirectorio(directorio);
-                if(faltantes.size() > 0) {
+                List<String> faltantes = getListaFicheiros().compararDirectorio(directorio);
+                if (faltantes.size() > 0) {
                     //Ao directorio fáltalle algún ficheiro
                     int ret = JOptionPane.showConfirmDialog(this,
                             "O directorio destino non contén todos os ficheiros necesarios. "
-                                    + "Desexa crealos agora?", "Aviso", 
-                                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-                    if(ret == JOptionPane.YES_OPTION) {
+                            + "Desexa crealos agora?", "Aviso",
+                            JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                    if (ret == JOptionPane.YES_OPTION) {
                         faltantes.clear();
-                    }
-                    else {
+                    } else {
                         throw new CancelarAccionExcepcion();
                     }
                 }
-                
+
                 setRutaDirectorioDestino(directorio.getAbsolutePath());
-                lf.cargarFicheirosDestino(directorio);
-                txtTraducion.setEnabled(true);
-                miCopiar.setEnabled(true);
+                getListaFicheiros().cargarFicheirosDestino(directorio);
                 mostrarEstadoGardado();
 
             }
@@ -485,7 +493,8 @@ public class InterfaceTradutor extends javax.swing.JFrame {
             confirmarGardado();
             Configuracion.gardarConfiguracion();
             System.exit(0);
-        } catch (CancelarAccionExcepcion ex) { } catch (IOException ex) {
+        } catch (CancelarAccionExcepcion ex) {
+        } catch (IOException ex) {
             JOptionPane.showMessageDialog(this, "Ocorreu un erro cos ficheiros. Comprobe os permisos do directorio.");
         }
     }//GEN-LAST:event_formWindowClosing
@@ -495,8 +504,12 @@ public class InterfaceTradutor extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowOpened
 
     private void miRestaurarTraducionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miRestaurarTraducionActionPerformed
-        String cadeaOrixe = ficheiroOrixeActivo.lerCadea(indexActual);
-        ficheiroDestinoActivo.restaurarTraducion(indexActual, cadeaOrixe);
+        String cadeaOrixe = getFicheiroOrixeActivo().lerCadea(indexActual);
+        getFicheiroDestinoActivo().restaurarTraducion(indexActual, cadeaOrixe);
+        cambiando = true;
+        txtTraducion.setText(getFicheiroOrixeActivo().lerTraducion(indexActual, FicheiroCSVOrixe.idiomaBase.INGLES));
+        cambiando = false;
+        traducionTocada = false;
     }//GEN-LAST:event_miRestaurarTraducionActionPerformed
 
     /**
@@ -517,7 +530,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         this.rutaDirectorioOrixe = rutaDirectorioOrixe;
         setRutaDirectorioDestino(null);
         txtRutaOrixe.setText(rutaDirectorioOrixe);
-        if(rutaDirectorioOrixe != null) {
+        if (rutaDirectorioOrixe != null) {
             Configuracion.setRutaOrixe(rutaDirectorioOrixe);
         }
     }
@@ -537,43 +550,39 @@ public class InterfaceTradutor extends javax.swing.JFrame {
      * @throws IOException
      */
     public void setRutaDirectorioDestino(String rutaDirectorioDestino) throws CancelarAccionExcepcion, IOException {
-        if(this.rutaDirectorioDestino != null) {
+        if (this.rutaDirectorioDestino != null) {
             //Xa se escolleu un directorio de destino
             confirmarGardado();
-        }
-        else {
-            
+        } else {
+
         }
         this.rutaDirectorioDestino = rutaDirectorioDestino;
         txtRutaDestino.setText(rutaDirectorioDestino);
-        if(rutaDirectorioDestino != null) {
+        if (rutaDirectorioDestino != null) {
             Configuracion.setRutaDestino(rutaDirectorioDestino);
         }
     }
 
-    
     public boolean senCambios() {
         return numFicheirosCambiados() == 0;
     }
 
     public int numLinhasCambiadas() {
-        if(getFicheiroDestinoActivo() != null) {
+        if (getFicheiroDestinoActivo() != null) {
             return ficheiroDestinoActivo.getNumCambios();
-        }
-        else {
+        } else {
             return 0;
         }
     }
-    
+
     /**
      *
      * @return
      */
     public int numFicheirosCambiados() {
-        if(lf != null) {
-            return lf.numFicheirosCambiados();
-        }
-        else {
+        if (getListaFicheiros() != null) {
+            return getListaFicheiros().numFicheirosCambiados();
+        } else {
             return 0;
         }
     }
@@ -582,23 +591,21 @@ public class InterfaceTradutor extends javax.swing.JFrame {
      *
      */
     public void mostrarEstadoGardado() {
-        if(senCambios()) {
+        if (senCambios()) {
             lblGardado.setText("Sen cambios que gardar");
-        }
-        else {
+        } else {
             lblGardado.setText("Ficheiros modificados");
         }
     }
-    
+
     /**
      *
      * @return
      */
     public boolean isLinhaCambiada() {
-        if(getFicheiroDestinoActivo() != null) {
+        if (getFicheiroDestinoActivo() != null) {
             return getFicheiroDestinoActivo().haiCambios(indexActual);
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -634,35 +641,54 @@ public class InterfaceTradutor extends javax.swing.JFrame {
     public void setFicheiroDestinoActivo(FicheiroDestino ficheiroDestinoActivo) {
         this.ficheiroDestinoActivo = ficheiroDestinoActivo;
     }
-    
+
     /**
      *
      */
     public void notificarCambioNaTraducion() {
-        if(!cambiando)
+        if (!cambiando) {
             traducionTocada = true;
+        }
     }
-    
+
     /**
      *
      * @throws CancelarAccionExcepcion
      * @throws IOException
      */
     public void confirmarGardado() throws CancelarAccionExcepcion, IOException {
-        if(indexActual != -1 && txtTraducion.isEnabled() && traducionTocada) {
+        if (indexActual != -1 && txtTraducion.isEnabled() && traducionTocada) {
             ficheiroDestinoActivo.setTraducion(indexActual, txtTraducion.getText());
         }
-        if(senCambios()) {
+        if (senCambios()) {
             return; //Xa está gardado
         }
         int ret = JOptionPane.showConfirmDialog(this, "Desexa gardar os cambios realizados?",
                 "Pregunta", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
-        if(ret == JOptionPane.CANCEL_OPTION) {
+        if (ret == JOptionPane.CANCEL_OPTION) {
             throw new CancelarAccionExcepcion();
         }
-        if(ret == JOptionPane.YES_OPTION) {
+        if (ret == JOptionPane.YES_OPTION) {
             gardarDatos();
         }
+    }
+
+    private ListaFicheiros getListaFicheiros() {
+        return lf;
+    }
+
+    private void setListaFicheiros(ListaFicheiros lf) {
+        this.lf = lf;
+        setListaCodigos(null);
+    }
+
+    private ListaCodigos getListaCodigos() {
+        return lc;
+    }
+
+    private void setListaCodigos(ListaCodigos lc) {
+        this.lc = lc;
+        txtTraducion.setEnabled(lc != null);
     }
     
     /**
@@ -670,13 +696,13 @@ public class InterfaceTradutor extends javax.swing.JFrame {
      * @throws IOException
      */
     public void gardarDatos() throws IOException {
-        if(indexActual != -1 && txtTraducion.isEnabled() && traducionTocada) {
+        if (indexActual != -1 && txtTraducion.isEnabled() && traducionTocada) {
             ficheiroDestinoActivo.setTraducion(indexActual, txtTraducion.getText());
         }
-        lf.gardarDatos();
+        getListaFicheiros().gardarDatos();
         mostrarEstadoGardado();
     }
-    
+
     /**
      * @param args the command line arguments
      */
@@ -698,7 +724,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         }
         //</editor-fold>
         //</editor-fold>
-        
+
         //</editor-fold>
 
         /* Create and display the form */
@@ -749,142 +775,14 @@ public class InterfaceTradutor extends javax.swing.JFrame {
 
 }
 
-class ListaFicheiros implements ListModel {
-
-    private File directorioDestino;
-    private final List<FicheiroCSVOrixe> ficheirosOrixe;
-    private List<FicheiroDestino> ficheirosDestino;
-    private final List<ListDataListener> listener = new ArrayList<>();
-
-    public ListaFicheiros(List<FicheiroCSVOrixe> ficheiros) {
-        this.ficheirosOrixe = ficheiros;
-    }
-
-    public void setFicheirosDestino(List<FicheiroDestino> ficheirosDestino) {
-        this.ficheirosDestino = ficheirosDestino;
-    }
-    
-    public FicheiroCSVOrixe getFicheiroOrixe(int index) {
-        return ficheirosOrixe.get(index);
-    }
-    
-    public FicheiroDestino getFicheiroDestino(int index) {
-        return ficheirosDestino.get(index);
-    }
-    
-    public List<String> compararDirectorio(File d) {
-        List<String> saida = new ArrayList<>();
-        List<String> nomesFicheiros = Arrays.asList(d.list(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.toLowerCase().endsWith(".csv");
-            }
-        }));
-        for(FicheiroCSVOrixe csv : ficheirosOrixe) {
-            if(!nomesFicheiros.contains(csv.getNome())) {
-                saida.add(csv.getNome());
-            }
-        }
-        return saida;
-    }
-    
-    public void gardarDatos() throws IOException {
-        for(FicheiroDestino f : ficheirosDestino) {
-            f.escribirDatos();
-        }
-    }
-    
-    @Override
-    public int getSize() {
-        return ficheirosOrixe.size();
-    }
-
-    @Override
-    public Object getElementAt(int index) {
-        return ficheirosOrixe.get(index).getNome();
-    }
-
-    @Override
-    public void addListDataListener(ListDataListener l) {
-        listener.add(l);
-    }
-
-    @Override
-    public void removeListDataListener(ListDataListener l) {
-        listener.remove(l);
-    }
-
-    void cargarFicheirosDestino(File destino) throws IOException {
-        directorioDestino = destino;
-        ficheirosDestino = new ArrayList<>();
-        for(FicheiroCSVOrixe orixe : ficheirosOrixe) {
-            File f = new File(destino, orixe.getNome());
-            if(f.exists()) {
-                //Tomamos o destino como "orixe" para cargar os datos que xa teña
-                ficheirosDestino.add(new FicheiroDestino(f));
-            }
-            else {
-                //Tomamos o orixe como "molde" por defecto
-                ficheirosDestino.add(new FicheiroDestino(orixe.getFicheiro(), f));
-            }
-        }
-    }
-
-    int numFicheirosCambiados() {
-        int ret = 0;
-        if(ficheirosDestino == null) {
-            return 0;
-        }
-        for(FicheiroDestino f : ficheirosDestino) {
-            if(f.getNumCambios() > 0) {
-                ret++;
-            }
-        }
-        return ret;
-    }
-    
-}
-
-class ListaCodigos implements ListModel {
-
-    private final FicheiroCSVOrixe ficheiroOrixe;
-    private final List<ListDataListener> listener = new ArrayList<>();
-
-    public ListaCodigos(FicheiroCSVOrixe ficheiro) {
-        this.ficheiroOrixe = ficheiro;
-    }
-    
-    @Override
-    public int getSize() {
-        return ficheiroOrixe.getSize();
-    }
-
-    @Override
-    public Object getElementAt(int index) {
-        String ret;
-        return ficheiroOrixe.lerCodigo(index);
-    }
-
-    @Override
-    public void addListDataListener(ListDataListener l) {
-        listener.add(l);
-    }
-
-    @Override
-    public void removeListDataListener(ListDataListener l) {
-        listener.remove(l);
-    }
-    
-}
-
 class CampoTraducionListener implements DocumentListener {
 
     InterfaceTradutor pai;
-    
+
     CampoTraducionListener(InterfaceTradutor pai) {
-    this.pai = pai;
+        this.pai = pai;
     }
-    
+
     @Override
     public void insertUpdate(DocumentEvent e) {
         pai.notificarCambioNaTraducion();

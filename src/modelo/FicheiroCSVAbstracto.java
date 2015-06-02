@@ -58,5 +58,12 @@ public abstract class FicheiroCSVAbstracto {
     public String getNome() {
         return nome;
     }
+    
+    /**
+     *
+     * @param index
+     * @return
+     */
+    public abstract String lerCadea(int index);
 
 }
