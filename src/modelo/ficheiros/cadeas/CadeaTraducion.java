@@ -1,4 +1,4 @@
-package modelo.ficheiros;
+package modelo.ficheiros.cadeas;
 
 import java.util.Arrays;
 import java.util.List;

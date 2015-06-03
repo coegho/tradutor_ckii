@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import modelo.ficheiros.cadeas.CadeaTraducionComentario;
+import modelo.ficheiros.cadeas.CadeaTraducionDestino;
 
 /**
  *
@@ -15,7 +17,6 @@ import java.util.Map;
 public class FicheiroCSVDestino extends FicheiroCSVAbstracto {
 
     private final Map<String, CadeaTraducionDestino> cadeas;
-    private final List<String> codigos;
 
     /**
      *
@@ -26,10 +27,19 @@ public class FicheiroCSVDestino extends FicheiroCSVAbstracto {
         this.ficheiro = ficheiro;
         cadeas = new HashMap<>();
         codigos = new ArrayList<>();
+        int nComentario = 1;
         for (String l : lerCadeasDendeFicheiro(ficheiro)) {
-            CadeaTraducionDestino c = new CadeaTraducionDestino(l);
-            codigos.add(c.getCodigo());
-            cadeas.put(c.getCodigo(), c);
+            if(l.charAt(0) != '#') { //cadea normal
+                CadeaTraducionDestino c = new CadeaTraducionDestino(l);
+                codigos.add(c.getCodigo());
+                cadeas.put(c.getCodigo(), c);
+            }
+            else { //comentario
+                String nomeComentario = "Comentario nº " + Integer.toString(nComentario);
+                codigos.add(nomeComentario);
+                cadeas.put(nomeComentario, new CadeaTraducionComentario(l));
+                nComentario++;
+            }
         }
     }
 
@@ -169,7 +179,8 @@ public class FicheiroCSVDestino extends FicheiroCSVAbstracto {
         try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
                 new DataOutputStream(new FileOutputStream(ficheiro, false)),
                 Charset.forName("ISO-8859-1")))) {
-            for (String c : cadeas.keySet()) {
+            //Lese a lista de cadeas para que se garden nunha orde determinada
+            for (String c : codigos) {
                 bw.write(cadeas.get(c).toString());
                 bw.newLine();
                 cadeas.get(c).aceptarCambios();
@@ -215,87 +226,5 @@ public class FicheiroCSVDestino extends FicheiroCSVAbstracto {
         return cadeas.get(codigo).xaTraducida();
     }
 
-    public List<String> getCodigos() {
-        return new ArrayList(codigos);
-    }
 
-}
-
-class CadeaTraducionDestino extends CadeaTraducion {
-    boolean houboCambios = false;
-    String traducion;
-
-    CadeaTraducionDestino(String cadea) {
-        super.CadeaTraducion(cadea);
-    }
-
-    public String getTraducion() {
-        if (traducion != null) {
-            return traducion;
-        } else {
-            return traducions.get(0);
-        }
-    }
-
-    public void setTraducionsDendeCadea(String cadea) {
-        if(this.toString().contentEquals(cadea)) { //xa está gardado así en disco
-            houboCambios = false;
-        }
-        else { //no disco está gardado doutra forma
-            construirDendeCadea(cadea);
-            houboCambios = true;
-        }
-        traducion = null;
-    }
-
-    public void setTraducion(String traducion) {
-        this.traducion = traducion.replace(";", ",").replace("\n", " ").
-                replace("\r", "").trim();
-        houboCambios = true;
-    }
-
-    /**
-     * 
-     * @return 
-     */
-    public boolean modificada() {
-        return (traducion != null);
-    }
-
-    @Override
-    public String toString() {
-        List<String> ret;
-        if (traducion != null) { //Cadea xa traducida
-            ret = new ArrayList<>();
-            ret.add(getTraducion());
-            for (int i = 0; i < traducions.size() - 2; i++) {
-                ret.add("");
-            }
-            ret.add("x");
-        } else { //Cadea sen traducir
-            ret = traducions;
-        }
-        return unirCadea(codigo, ret);
-    }
-
-    /**
-     * Os cambios aceptáronse, de modo que poden suceder dúas cousas:
-     * 1. A cadea traduciuse: borrarase todas as traducións básicas (francés,
-     * alemán, español).
-     * 2. A cadea non se traduciu / restaurouse da orixinal: non sucede nada.
-     */
-    void aceptarCambios() {
-        if(traducion != null) { //houbo tradución
-            for(int i = 1; i < traducions.size(); i++) {
-                traducions.set(i, "");
-            }
-        }
-        traducions.set(0, traducion);
-        traducion = null;
-    }
-
-    
-    public boolean xaTraducida() {
-        return traducions.get(1).equals("");
-    }
 }

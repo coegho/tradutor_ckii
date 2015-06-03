@@ -19,11 +19,12 @@ public abstract class FicheiroCSVAbstracto {
     protected static String delim = ";";
     protected String nome;
     protected File ficheiro;
+    protected List<String> codigos;
     
     /**
      *
      * @param ficheiro
-     * @return
+     * @return Devolve unha lista de cadeas en bruto.
      * @throws FileNotFoundException
      * @throws IOException
      */
@@ -31,15 +32,15 @@ public abstract class FicheiroCSVAbstracto {
         List<String> ret = new ArrayList<>();
         this.ficheiro = ficheiro;
         nome = ficheiro.getName();
-        BufferedReader buffer = new BufferedReader(
+        try (BufferedReader buffer = new BufferedReader(
                 new InputStreamReader(
                         new DataInputStream(
-                                new FileInputStream(ficheiro)),Charset.forName("ISO-8859-1")));
-        String fila;
-        while((fila = buffer.readLine()) != null) {
-            ret.add(fila);
+                                new FileInputStream(ficheiro)),Charset.forName("ISO-8859-1")))) {
+            String fila;
+            while((fila = buffer.readLine()) != null) {
+                ret.add(fila);
+            }
         }
-        buffer.close();
         return ret;
     }
     
@@ -86,4 +87,21 @@ public abstract class FicheiroCSVAbstracto {
      * @return
      */
     public abstract String lerCodigo(int index);
+    
+    /**
+     *
+     * @param codigo
+     * @return
+     */
+    public boolean conten(String codigo) {
+        return codigos.contains(codigo);
+    }
+    
+    /**
+     *
+     * @return
+     */
+    public List<String> getCodigos() {
+        return new ArrayList(codigos);
+    }
 }

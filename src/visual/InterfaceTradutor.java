@@ -1,6 +1,7 @@
 package visual;
 
 import excepcions.CancelarAccionExcepcion;
+import java.awt.Cursor;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
@@ -381,7 +382,9 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         if (dialEscollerFicheiro.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             directorio = dialEscollerFicheiro.getSelectedFile();
             try {
+                this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
                 asignarDirectorioOrixe(directorio);
+                this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(this, "Non se puido abrir o ficheiro.");
             } catch (CancelarAccionExcepcion ex) {
@@ -396,50 +399,80 @@ public class InterfaceTradutor extends javax.swing.JFrame {
             return;
         }
         if (getRutaDirectorioOrixe() != null) {
+            this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
             lc.setFicheiroOrixe(getListaFicheiros().getFicheiroOrixe(listFicheiros.getSelectedIndex()));
+            this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         }
         listCodigosValueChanged(evt);
     }//GEN-LAST:event_listFicheirosValueChanged
 
     private void listCodigosValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listCodigosValueChanged
         boolean g;
+        
         int index = listCodigos.getSelectedIndex();
         //Gárdase a tradución
         if (indexActual != -1 && txtTraducion.isEnabled() && traducionTocada) {
-            lc.setTraducion(indexActual, txtTraducion.getText());
+            lc.setTraducion(lc.getCodigo(indexActual), txtTraducion.getText());
         }
 
         //Cárgase a seguinte
         if (index > -1 && index < lc.getSize()) {
+            
             txtCodigo.setText(lc.getCodigo(index));
-            txtIngles.setText(lc.getFicheiroOrixe().lerTraducion(lc.getCodigo(index),
+            
+            if(lc.getFicheiroOrixe().conten(lc.getCodigo(index))) {
+                //O código existe na orixe
+                txtIngles.setEnabled(true);
+                txtIngles.setText(lc.getFicheiroOrixe().lerTraducion(lc.getCodigo(index),
                     FicheiroCSVOrixe.idiomaBase.INGLES));
-            txtFrances.setText(lc.getFicheiroOrixe().lerTraducion(lc.getCodigo(index),
+                txtFrances.setEnabled(true);
+                txtFrances.setText(lc.getFicheiroOrixe().lerTraducion(lc.getCodigo(index),
                     FicheiroCSVOrixe.idiomaBase.FRANCES));
-            txtAleman.setText(lc.getFicheiroOrixe().lerTraducion(lc.getCodigo(index),
+                txtAleman.setEnabled(true);
+                txtAleman.setText(lc.getFicheiroOrixe().lerTraducion(lc.getCodigo(index),
                     FicheiroCSVOrixe.idiomaBase.ALEMAN));
-            txtEspanhol.setText(lc.getFicheiroOrixe().lerTraducion(lc.getCodigo(index),
-                    FicheiroCSVOrixe.idiomaBase.ESPANHOL));
-            if (txtTraducion.isEnabled()) {
-                cambiando = true;
-                txtTraducion.setText(lc.getTraducion(index));
-                cambiando = false;
+                txtEspanhol.setEnabled(true);
+                txtEspanhol.setText(lc.getFicheiroOrixe().lerTraducion(lc.getCodigo(index),
+                    FicheiroCSVOrixe.idiomaBase.ESPANHOL)); 
             }
+            else {
+                //O código non existe na orixe
+                txtIngles.setEnabled(false);
+                txtIngles.setText("");
+                txtFrances.setEnabled(false);
+                txtFrances.setText("");
+                txtAleman.setEnabled(false);
+                txtAleman.setText("");
+                txtEspanhol.setEnabled(false);
+                txtEspanhol.setText(""); 
+            }
+            
+            cambiando = true;
+            if (lc.getFicheiroDestino().conten(lc.getCodigo(index))) {
+                //O código existe no destino
+                txtTraducion.setEnabled(true);
+                txtTraducion.setText(lc.getTraducion(lc.getCodigo(index)));
+                
+                miCopiar.setEnabled(true);
+                miRestaurarTraducion.setEnabled(true);
+            }
+            else {
+                //O código non existe no destino
+                txtTraducion.setEnabled(false);
+                txtTraducion.setText("");
+            }
+            cambiando = false;
+            
         } else {
             txtCodigo.setText("");
             txtIngles.setText("");
             txtFrances.setText("");
             txtAleman.setText("");
             txtEspanhol.setText("");
-            if (txtTraducion.isEnabled()) {
-                txtTraducion.setText("");
-            }
+            txtTraducion.setText("");
         }
         indexActual = index;
         traducionTocada = false;
-        txtTraducion.setEnabled(true);
-        miCopiar.setEnabled(true);
-        miRestaurarTraducion.setEnabled(true);
     }//GEN-LAST:event_listCodigosValueChanged
 
     private void txtFrancesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFrancesActionPerformed
@@ -460,7 +493,9 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         try {
             if (dialEscollerFicheiro.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 File directorio = dialEscollerFicheiro.getSelectedFile();
+                this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
                 asignarDirectorioDestino(directorio);
+                this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
             }
         } catch (IOException ex) {
@@ -518,8 +553,13 @@ public class InterfaceTradutor extends javax.swing.JFrame {
     }//GEN-LAST:event_chkSenTraducirActionPerformed
 
     private void aplicarFiltros() {
+        this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        if (indexActual != -1 && (getRutaDirectorioDestino() != null) && traducionTocada) {
+            lc.setTraducion(lc.getCodigo(indexActual), txtTraducion.getText());
+        }
         lc.borrarFiltros();
         lc.aplicarFiltro();
+        this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
     
     private void asignarDirectorioOrixe(File directorio) throws IOException, CancelarAccionExcepcion {
@@ -651,7 +691,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
      */
     public boolean isLinhaCambiada() {
         if (lc.getFicheiroDestino() != null) {
-            return lc.getFicheiroDestino().haiCambios(indexActual);
+            return lc.getFicheiroDestino().haiCambios(lc.getCodigo(indexActual));
         } else {
             return false;
         }
@@ -688,7 +728,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
      */
     public void confirmarGardado() throws CancelarAccionExcepcion, IOException {
         if (indexActual != -1 && (getRutaDirectorioDestino() != null) && traducionTocada) {
-            lc.setTraducion(indexActual, txtTraducion.getText());
+            lc.setTraducion(lc.getCodigo(indexActual), txtTraducion.getText());
         }
         if (senCambios()) {
             return; //Xa está gardado
@@ -715,7 +755,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
     public void gardarDatos() throws IOException {
         //Gardando os cambios na liña actual
         if (indexActual != -1 && txtTraducion.isEnabled() && traducionTocada) {
-            lc.setTraducion(indexActual, txtTraducion.getText());
+            lc.setTraducion(lc.getCodigo(indexActual), txtTraducion.getText());
             traducionTocada = false;
         }
         getListaFicheiros().gardarDatos();

@@ -104,9 +104,6 @@ public class ListaCodigos implements ListModel, ListSelectionListener {
         }
         List<String> novosCodigos = new ArrayList<>();
         for(String c : codigosFiltrados) {
-            if(c.equals("harass_tactic")) {
-                int a = 1+1;
-            }
             if((!filtrarNonTraducidas || !getFicheiroDestino().xaTraducida(c)) &&
                     getFicheiroDestino().lerCadea(c).contains(filtro)) {
                 novosCodigos.add(c);
@@ -150,9 +147,19 @@ public class ListaCodigos implements ListModel, ListSelectionListener {
      * índice recibido nun código correcto.
      * @param index
      * @param text
+     * @deprecated
      */
     public void setTraducion(int index, String text) {
         getFicheiroDestino().setTraducion(codigosFiltrados.get(index), text);
+    }
+    
+    /**
+     * Escribe unha tradución.
+     * @param codigo
+     * @param text
+     */
+    public void setTraducion(String codigo, String text) {
+        getFicheiroDestino().setTraducion(codigo, text);
     }
 
     /**
@@ -160,9 +167,19 @@ public class ListaCodigos implements ListModel, ListSelectionListener {
      * índice recibido nun código correcto.
      * @param index
      * @return
+     * @deprecated 
      */
     public String getTraducion(int index) {
         return getFicheiroDestino().getTraducion(codigosFiltrados.get(index));
+    }
+    
+    /**
+     * Devolve unha tradución.
+     * @param codigo
+     * @return
+     */
+    public String getTraducion(String codigo) {
+        return getFicheiroDestino().getTraducion(codigo);
     }
 
     /**
