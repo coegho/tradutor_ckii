@@ -21,6 +21,9 @@ public class ListaCodigos implements ListModel, ListSelectionListener {
     private FicheiroCSVDestino ficheiroDestino;
     ListaFicheiros lf;
     private final List<ListDataListener> listener = new ArrayList<>();
+    private List<String> codigosFiltrados;
+    private String filtro = "";
+    private boolean filtrarNonTraducidas = false;
 
     /**
      *
@@ -28,6 +31,7 @@ public class ListaCodigos implements ListModel, ListSelectionListener {
      */
     public ListaCodigos(ListaFicheiros lf) {
         this.lf = lf;
+        codigosFiltrados = new ArrayList<>();
     }
 
 
@@ -46,6 +50,8 @@ public class ListaCodigos implements ListModel, ListSelectionListener {
 
     public void setFicheiroDestino(FicheiroCSVDestino ficheiroDestino) {
         this.ficheiroDestino = ficheiroDestino;
+        this.borrarFiltros();
+        this.aplicarFiltro();
         for(ListDataListener l : listener) {
                 l.contentsChanged(new ListDataEvent(this,
                     ListDataEvent.CONTENTS_CHANGED,0,ficheiroDestino.getSize()));
@@ -55,15 +61,17 @@ public class ListaCodigos implements ListModel, ListSelectionListener {
 
     @Override
     public int getSize() {
-        if(ficheiroDestino != null) {
+        /*if(ficheiroDestino != null) {
             return ficheiroDestino.getSize();
         }
-        return 0;
+        return 0;*/
+        return codigosFiltrados.size();
     }
 
     @Override
     public Object getElementAt(int index) {
-        return ficheiroDestino.lerCodigo(index);
+        //return ficheiroDestino.lerCodigo(index);
+        return getCodigo(index);
     }
 
     @Override
@@ -83,8 +91,96 @@ public class ListaCodigos implements ListModel, ListSelectionListener {
         setFicheiroDestino(lf.getFicheiroDestino(list.getSelectedIndex()));
         for(ListDataListener l : listener) {
             l.contentsChanged(new ListDataEvent(this,
-                    ListDataEvent.CONTENTS_CHANGED,0,getFicheiroDestino().getSize()));
+                    ListDataEvent.CONTENTS_CHANGED,0,codigosFiltrados.size()));
         }
+    }
+    
+    /**
+     *
+     */
+    public void aplicarFiltro() {
+        if(getFicheiroDestino() == null) {
+            return;
+        }
+        List<String> novosCodigos = new ArrayList<>();
+        for(String c : codigosFiltrados) {
+            if(c.equals("harass_tactic")) {
+                int a = 1+1;
+            }
+            if((!filtrarNonTraducidas || !getFicheiroDestino().xaTraducida(c)) &&
+                    getFicheiroDestino().lerCadea(c).contains(filtro)) {
+                novosCodigos.add(c);
+            }
+        }
+        codigosFiltrados = novosCodigos;
+        for(ListDataListener l : listener) {
+            l.contentsChanged(new ListDataEvent(this,
+                    ListDataEvent.CONTENTS_CHANGED,0,codigosFiltrados.size()));
+        }
+    }
+    
+    /**
+     *
+     */
+    public void borrarFiltros() {
+        if(getFicheiroDestino() == null) {
+            return;
+        }
+        codigosFiltrados = getFicheiroDestino().getCodigos();
+    }
+
+    public String getFiltro() {
+        return filtro;
+    }
+
+    public void setFiltro(String filtro) {
+        this.filtro = filtro;
+    }
+
+    public boolean isFiltrarNonTraducidas() {
+        return filtrarNonTraducidas;
+    }
+
+    public void setFiltrarNonTraducidas(boolean filtrarNonTraducidas) {
+        this.filtrarNonTraducidas = filtrarNonTraducidas;
+    }
+
+    /**
+     * Escribe unha tradución. A clase ListaCodigos encárgase de convertir o
+     * índice recibido nun código correcto.
+     * @param index
+     * @param text
+     */
+    public void setTraducion(int index, String text) {
+        getFicheiroDestino().setTraducion(codigosFiltrados.get(index), text);
+    }
+
+    /**
+     * Devolve unha tradución. A clase ListaCodigos encárgase de convertir o
+     * índice recibido nun código correcto.
+     * @param index
+     * @return
+     */
+    public String getTraducion(int index) {
+        return getFicheiroDestino().getTraducion(codigosFiltrados.get(index));
+    }
+
+    /**
+     *
+     * @param index
+     * @param cadeaOrixe
+     */
+    public void restaurarTraducion(int index, String cadeaOrixe) {
+        getFicheiroDestino().restaurarTraducion(codigosFiltrados.get(index), cadeaOrixe);
+    }
+    
+    /**
+     *
+     * @param index
+     * @return
+     */
+    public String getCodigo(int index) {
+        return codigosFiltrados.get(index);
     }
 
 }

@@ -22,10 +22,10 @@ public class CodigosCellRenderer extends DefaultListCellRenderer {
     @Override
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        if(!lc.getFicheiroDestino().xaTraducida(index)) {
+        if(!lc.getFicheiroDestino().xaTraducida(lc.getCodigo(index))) {
             setForeground(Color.red);
         }
-        if(lc.getFicheiroDestino().haiCambios(index)) {
+        if(lc.getFicheiroDestino().haiCambios(lc.getCodigo(index))) {
             setFont(getFont().deriveFont(Font.BOLD));
         }
         return this;

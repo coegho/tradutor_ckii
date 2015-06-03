@@ -12,7 +12,6 @@ import javax.swing.event.DocumentListener;
 import modelo.CodigosCellRenderer;
 import modelo.Configuracion;
 import modelo.ficheiros.FicheiroCSVOrixe;
-import modelo.ficheiros.FicheiroCSVDestino;
 import modelo.listas.ListaCodigos;
 import modelo.listas.ListaFicheiros;
 
@@ -63,6 +62,9 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         txtRutaOrixe = new javax.swing.JTextField();
         txtRutaDestino = new javax.swing.JTextField();
         lblGardado = new javax.swing.JLabel();
+        txtProcurar = new javax.swing.JTextField();
+        chkSenTraducir = new javax.swing.JCheckBox();
+        btbProcurar = new javax.swing.JButton();
         barraMenu = new javax.swing.JMenuBar();
         mFicheiro = new javax.swing.JMenu();
         miOrixe = new javax.swing.JMenuItem();
@@ -174,6 +176,24 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         lblGardado.setFont(new java.awt.Font("Cantarell", 0, 12)); // NOI18N
         lblGardado.setText("Sen cambios que gardar");
 
+        txtProcurar.setFont(new java.awt.Font("Cantarell", 0, 12)); // NOI18N
+
+        chkSenTraducir.setFont(new java.awt.Font("Cantarell", 0, 12)); // NOI18N
+        chkSenTraducir.setText("Sen traducir");
+        chkSenTraducir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkSenTraducirActionPerformed(evt);
+            }
+        });
+
+        btbProcurar.setFont(new java.awt.Font("Cantarell", 0, 12)); // NOI18N
+        btbProcurar.setText("Procurar");
+        btbProcurar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btbProcurarActionPerformed(evt);
+            }
+        });
+
         mFicheiro.setText("Ficheiro");
 
         miOrixe.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
@@ -270,7 +290,14 @@ public class InterfaceTradutor extends javax.swing.JFrame {
                             .addComponent(txtRutaOrixe)
                             .addComponent(txtRutaDestino)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 359, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 365, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(txtProcurar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btbProcurar)
+                                .addGap(18, 18, 18)
+                                .addComponent(chkSenTraducir)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
@@ -287,9 +314,15 @@ public class InterfaceTradutor extends javax.swing.JFrame {
                     .addComponent(txtRutaDestino, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 194, Short.MAX_VALUE)
-                    .addComponent(jScrollPane3))
-                .addGap(4, 4, 4)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(chkSenTraducir, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btbProcurar, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtProcurar, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE))
+                .addGap(2, 2, 2)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -329,8 +362,6 @@ public class InterfaceTradutor extends javax.swing.JFrame {
     private String rutaDirectorioDestino;
     private ListaFicheiros lf;
     private ListaCodigos lc;
-    private FicheiroCSVOrixe ficheiroOrixeActivo;
-    private FicheiroCSVDestino ficheiroDestinoActivo;
     int indexActual = -1;
     boolean cambiando = false;
     boolean traducionTocada = false;
@@ -365,10 +396,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
             return;
         }
         if (getRutaDirectorioOrixe() != null) {
-            setFicheiroOrixeActivo(getListaFicheiros().getFicheiroOrixe(listFicheiros.getSelectedIndex()));
-        }
-        if (getRutaDirectorioDestino() != null) {
-            setFicheiroDestinoActivo(getListaFicheiros().getFicheiroDestino(listFicheiros.getSelectedIndex()));
+            lc.setFicheiroOrixe(getListaFicheiros().getFicheiroOrixe(listFicheiros.getSelectedIndex()));
         }
         listCodigosValueChanged(evt);
     }//GEN-LAST:event_listFicheirosValueChanged
@@ -378,23 +406,23 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         int index = listCodigos.getSelectedIndex();
         //Gárdase a tradución
         if (indexActual != -1 && txtTraducion.isEnabled() && traducionTocada) {
-            getFicheiroDestinoActivo().setTraducion(indexActual, txtTraducion.getText());
+            lc.setTraducion(indexActual, txtTraducion.getText());
         }
 
         //Cárgase a seguinte
-        if (index != -1 && index < getFicheiroOrixeActivo().getSize()) {
-            txtCodigo.setText(getFicheiroOrixeActivo().lerCodigo(index));
-            txtIngles.setText(getFicheiroOrixeActivo().lerTraducion(index,
+        if (index > -1 && index < lc.getSize()) {
+            txtCodigo.setText(lc.getCodigo(index));
+            txtIngles.setText(lc.getFicheiroOrixe().lerTraducion(lc.getCodigo(index),
                     FicheiroCSVOrixe.idiomaBase.INGLES));
-            txtFrances.setText(getFicheiroOrixeActivo().lerTraducion(index,
+            txtFrances.setText(lc.getFicheiroOrixe().lerTraducion(lc.getCodigo(index),
                     FicheiroCSVOrixe.idiomaBase.FRANCES));
-            txtAleman.setText(getFicheiroOrixeActivo().lerTraducion(index,
+            txtAleman.setText(lc.getFicheiroOrixe().lerTraducion(lc.getCodigo(index),
                     FicheiroCSVOrixe.idiomaBase.ALEMAN));
-            txtEspanhol.setText(getFicheiroOrixeActivo().lerTraducion(index,
+            txtEspanhol.setText(lc.getFicheiroOrixe().lerTraducion(lc.getCodigo(index),
                     FicheiroCSVOrixe.idiomaBase.ESPANHOL));
             if (txtTraducion.isEnabled()) {
                 cambiando = true;
-                txtTraducion.setText(getFicheiroDestinoActivo().getTraducion(index));
+                txtTraducion.setText(lc.getTraducion(index));
                 cambiando = false;
             }
         } else {
@@ -471,14 +499,29 @@ public class InterfaceTradutor extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowOpened
 
     private void miRestaurarTraducionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miRestaurarTraducionActionPerformed
-        String cadeaOrixe = getFicheiroOrixeActivo().lerCadea(indexActual);
-        getFicheiroDestinoActivo().restaurarTraducion(indexActual, cadeaOrixe);
+        String cadeaOrixe = lc.getFicheiroOrixe().lerCadea(lc.getCodigo(indexActual));
+        lc.restaurarTraducion(indexActual, cadeaOrixe);
         cambiando = true;
-        txtTraducion.setText(getFicheiroOrixeActivo().lerTraducion(indexActual, FicheiroCSVOrixe.idiomaBase.INGLES));
+        txtTraducion.setText(lc.getFicheiroOrixe().lerTraducion(lc.getCodigo(indexActual), FicheiroCSVOrixe.idiomaBase.INGLES));
         cambiando = false;
         traducionTocada = false;
     }//GEN-LAST:event_miRestaurarTraducionActionPerformed
 
+    private void btbProcurarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btbProcurarActionPerformed
+        lc.setFiltro(txtProcurar.getText());
+        aplicarFiltros();
+    }//GEN-LAST:event_btbProcurarActionPerformed
+
+    private void chkSenTraducirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkSenTraducirActionPerformed
+        lc.setFiltrarNonTraducidas(chkSenTraducir.isSelected());
+        aplicarFiltros();
+    }//GEN-LAST:event_chkSenTraducirActionPerformed
+
+    private void aplicarFiltros() {
+        lc.borrarFiltros();
+        lc.aplicarFiltro();
+    }
+    
     private void asignarDirectorioOrixe(File directorio) throws IOException, CancelarAccionExcepcion {
         confirmarGardado();
         
@@ -572,8 +615,8 @@ public class InterfaceTradutor extends javax.swing.JFrame {
     }
 
     public int numLinhasCambiadas() {
-        if (getFicheiroDestinoActivo() != null) {
-            return ficheiroDestinoActivo.getNumCambios();
+        if (lc.getFicheiroDestino() != null) {
+            return lc.getFicheiroDestino().getNumCambios();
         } else {
             return 0;
         }
@@ -607,8 +650,8 @@ public class InterfaceTradutor extends javax.swing.JFrame {
      * @return
      */
     public boolean isLinhaCambiada() {
-        if (getFicheiroDestinoActivo() != null) {
-            return getFicheiroDestinoActivo().haiCambios(indexActual);
+        if (lc.getFicheiroDestino() != null) {
+            return lc.getFicheiroDestino().haiCambios(indexActual);
         } else {
             return false;
         }
@@ -618,33 +661,11 @@ public class InterfaceTradutor extends javax.swing.JFrame {
      *
      * @return
      */
-    public FicheiroCSVOrixe getFicheiroOrixeActivo() {
+    /*public FicheiroCSVOrixe getFicheiroOrixeActivo() {
         return ficheiroOrixeActivo;
-    }
+    }*/
 
-    /**
-     *
-     * @param ficheiroOrixeActivo
-     */
-    public void setFicheiroOrixeActivo(FicheiroCSVOrixe ficheiroOrixeActivo) {
-        this.ficheiroOrixeActivo = ficheiroOrixeActivo;
-    }
 
-    /**
-     *
-     * @return
-     */
-    public FicheiroCSVDestino getFicheiroDestinoActivo() {
-        return ficheiroDestinoActivo;
-    }
-
-    /**
-     *
-     * @param ficheiroDestinoActivo
-     */
-    public void setFicheiroDestinoActivo(FicheiroCSVDestino ficheiroDestinoActivo) {
-        this.ficheiroDestinoActivo = ficheiroDestinoActivo;
-    }
 
     /**
      * Método que é chamado polo listener cando se cambia algo na tradución
@@ -667,7 +688,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
      */
     public void confirmarGardado() throws CancelarAccionExcepcion, IOException {
         if (indexActual != -1 && (getRutaDirectorioDestino() != null) && traducionTocada) {
-            ficheiroDestinoActivo.setTraducion(indexActual, txtTraducion.getText());
+            lc.setTraducion(indexActual, txtTraducion.getText());
         }
         if (senCambios()) {
             return; //Xa está gardado
@@ -694,7 +715,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
     public void gardarDatos() throws IOException {
         //Gardando os cambios na liña actual
         if (indexActual != -1 && txtTraducion.isEnabled() && traducionTocada) {
-            ficheiroDestinoActivo.setTraducion(indexActual, txtTraducion.getText());
+            lc.setTraducion(indexActual, txtTraducion.getText());
             traducionTocada = false;
         }
         getListaFicheiros().gardarDatos();
@@ -739,6 +760,8 @@ public class InterfaceTradutor extends javax.swing.JFrame {
     private javax.swing.JMenuBar barraMenu;
     private javax.swing.JButton btbAbaixo;
     private javax.swing.JButton btbArriba;
+    private javax.swing.JButton btbProcurar;
+    private javax.swing.JCheckBox chkSenTraducir;
     private javax.swing.JFileChooser dialEscollerFicheiro;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
@@ -766,6 +789,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
     private javax.swing.JTextField txtEspanhol;
     private javax.swing.JTextField txtFrances;
     private javax.swing.JTextField txtIngles;
+    private javax.swing.JTextField txtProcurar;
     private javax.swing.JTextField txtRutaDestino;
     private javax.swing.JTextField txtRutaOrixe;
     private javax.swing.JTextArea txtTraducion;

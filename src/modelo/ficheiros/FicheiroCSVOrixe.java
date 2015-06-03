@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -12,7 +14,8 @@ import java.util.List;
  */
 public class FicheiroCSVOrixe extends FicheiroCSVAbstracto {
 
-    protected List<CadeaTraducionOrixe> cadeas;
+    private final Map<String, CadeaTraducionOrixe> cadeas;
+    private final List<String> codigos;
 
     /**
      *
@@ -21,9 +24,13 @@ public class FicheiroCSVOrixe extends FicheiroCSVAbstracto {
      * @throws IOException
      */
     public FicheiroCSVOrixe(File ficheiro) throws FileNotFoundException, IOException {
-        cadeas = new ArrayList<>();
+        this.ficheiro = ficheiro;
+        cadeas = new HashMap<>();
+        codigos = new ArrayList<>();
         for (String l : lerCadeasDendeFicheiro(ficheiro)) {
-            cadeas.add(new CadeaTraducionOrixe(l));
+            CadeaTraducionOrixe c = new CadeaTraducionOrixe(l);
+            codigos.add(c.getCodigo());
+            cadeas.put(c.getCodigo(), c);
         }
     }
 
@@ -32,29 +39,48 @@ public class FicheiroCSVOrixe extends FicheiroCSVAbstracto {
      * @param index
      * @param l
      * @return
+     * @deprecated 
      */
     public String lerTraducion(int index, idiomaBase l) {
-        return cadeas.get(index).getIdioma(l);
+        return lerTraducion(codigos.get(index), l);
     }
-
+    
     /**
      *
-     * @param index
+     * @param codigo
+     * @param l
      * @return
      */
-    public String lerCadea(int index) {
-        return cadeas.get(index).toString();
+    public String lerTraducion(String codigo, idiomaBase l) {
+        return cadeas.get(codigo).getIdioma(l);
     }
 
     /**
      *
      * @param index
      * @return
+     * @deprecated
+     */
+    @Override
+    public String lerCadea(int index) {
+        return lerCadea(codigos.get(index));
+    }
+    
+    @Override
+    public String lerCadea(String codigo) {
+         return cadeas.get(codigo).toString();
+    }
+
+    /**
+     *
+     * @param index
+     * @return
+     * @deprecated 
      */
     @Override
     public String lerCodigo(int index) {
         if (index >= 0 && index < cadeas.size()) {
-            return cadeas.get(index).getCodigo();
+            return cadeas.get(codigos.get(index)).getCodigo();
         } else {
             throw new ArrayIndexOutOfBoundsException(index);
         }
@@ -76,6 +102,7 @@ public class FicheiroCSVOrixe extends FicheiroCSVAbstracto {
     public File getFicheiro() {
         return ficheiro;
     }
+
 
     /**
      *

@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -12,7 +14,8 @@ import java.util.List;
  */
 public class FicheiroCSVDestino extends FicheiroCSVAbstracto {
 
-    protected List<CadeaTraducionDestino> cadeas;
+    private final Map<String, CadeaTraducionDestino> cadeas;
+    private final List<String> codigos;
 
     /**
      *
@@ -21,9 +24,12 @@ public class FicheiroCSVDestino extends FicheiroCSVAbstracto {
      */
     public FicheiroCSVDestino(File ficheiro) throws IOException {
         this.ficheiro = ficheiro;
-        cadeas = new ArrayList<>();
+        cadeas = new HashMap<>();
+        codigos = new ArrayList<>();
         for (String l : lerCadeasDendeFicheiro(ficheiro)) {
-            cadeas.add(new CadeaTraducionDestino(l));
+            CadeaTraducionDestino c = new CadeaTraducionDestino(l);
+            codigos.add(c.getCodigo());
+            cadeas.put(c.getCodigo(), c);
         }
     }
 
@@ -35,9 +41,12 @@ public class FicheiroCSVDestino extends FicheiroCSVAbstracto {
      */
     public FicheiroCSVDestino(File orixe, File ficheiro) throws IOException {
         this.ficheiro = ficheiro;
-        cadeas = new ArrayList<>();
+        cadeas = new HashMap<>();
+        codigos = new ArrayList<>();
         for (String l : lerCadeasDendeFicheiro(orixe)) {
-            cadeas.add(new CadeaTraducionDestino(l));
+            CadeaTraducionDestino c = new CadeaTraducionDestino(l);
+            codigos.add(c.getCodigo());
+            cadeas.put(c.getCodigo(), c);
         }
     }
 
@@ -46,41 +55,73 @@ public class FicheiroCSVDestino extends FicheiroCSVAbstracto {
      *
      * @param index
      * @return
+     * @deprecated 
      */
     @Override
     public String lerCodigo(int index) {
         if (index >= 0 && index < cadeas.size()) {
-            return cadeas.get(index).getCodigo();
+            return cadeas.get(codigos.get(index)).getCodigo();
         } else {
             throw new ArrayIndexOutOfBoundsException(index);
         }
     }
     
+    
     /**
      *
      * @param index
      * @param texto
+     * @deprecated 
      */
     public void setTraducion(int index, String texto) {
-        cadeas.get(index).setTraducion(texto);
+        setTraducion(codigos.get(index), texto);
+    }
+    
+    /**
+     *
+     * @param codigo
+     * @param texto
+     */
+    public void setTraducion(String codigo, String texto) {
+        cadeas.get(codigo).setTraducion(texto);
     }
 
     /**
      *
-     * @param index
+     * @param index Índice da liña da que se quere obter a tradución.
      * @return
+     * @deprecated 
      */
     public String getTraducion(int index) {
-        return cadeas.get(index).getTraducion();
+        return getTraducion(codigos.get(index));
+    }
+    
+    /**
+     *
+     * @param codigo Código da liña da que se quere obter a tradución.
+     * @return
+     */
+    public String getTraducion(String codigo) {
+        return cadeas.get(codigo).getTraducion();
     }
 
     /**
      *
      * @param index
      * @param cadeaOrixe
+     * @deprecated 
      */
     public void restaurarTraducion(int index, String cadeaOrixe) {
-        cadeas.get(index).setTraducionsDendeCadea(cadeaOrixe);
+       restaurarTraducion(codigos.get(index), cadeaOrixe);
+    }
+    
+    /**
+     *
+     * @param codigo
+     * @param cadeaOrixe
+     */
+    public void restaurarTraducion(String codigo, String cadeaOrixe) {
+        cadeas.get(codigo).setTraducionsDendeCadea(cadeaOrixe);
     }
 
     /**
@@ -89,8 +130,8 @@ public class FicheiroCSVDestino extends FicheiroCSVAbstracto {
      */
     public int getNumCambios() {
         int ret = 0;
-        for (CadeaTraducionDestino c : cadeas) {
-            if (c.modificada()) {
+        for (String c : cadeas.keySet()) {
+            if (cadeas.get(c).modificada()) {
                 ret++;
             }
         }
@@ -101,9 +142,19 @@ public class FicheiroCSVDestino extends FicheiroCSVAbstracto {
      *
      * @param index
      * @return
+     * @deprecated 
      */
     public boolean haiCambios(int index) {
-        return cadeas.get(index).modificada();
+        return cadeas.get(codigos.get(index)).modificada();
+    }
+    
+    /**
+     *
+     * @param codigo
+     * @return
+     */
+    public boolean haiCambios(String codigo) {
+        return cadeas.get(codigo).modificada();
     }
 
     /**
@@ -115,21 +166,25 @@ public class FicheiroCSVDestino extends FicheiroCSVAbstracto {
         if (getNumCambios() == 0) {
             return;
         }
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
+        try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
                 new DataOutputStream(new FileOutputStream(ficheiro, false)),
-                Charset.forName("ISO-8859-1")));
-
-        for (CadeaTraducionDestino c : cadeas) {
-            bw.write(c.toString());
-            bw.newLine();
-            c.aceptarCambios();
+                Charset.forName("ISO-8859-1")))) {
+            for (String c : cadeas.keySet()) {
+                bw.write(cadeas.get(c).toString());
+                bw.newLine();
+                cadeas.get(c).aceptarCambios();
+            }
         }
-        bw.close();
     }
 
     @Override
     public String lerCadea(int index) {
-        return cadeas.get(index).toString();
+        return lerCadea(codigos.get(index));
+    }
+    
+    @Override
+    public String lerCadea(String codigo) {
+        return cadeas.get(codigo).toString();
     }
     
     /**
@@ -141,8 +196,27 @@ public class FicheiroCSVDestino extends FicheiroCSVAbstracto {
         return cadeas.size();
     }
     
+    /**
+     *
+     * @param index
+     * @return
+     * @deprecated 
+     */
     public boolean xaTraducida(int index) {
-        return cadeas.get(index).xaTraducida();
+        return xaTraducida(codigos.get(index));
+    }
+    
+    /**
+     *
+     * @param codigo
+     * @return
+     */
+    public boolean xaTraducida(String codigo) {
+        return cadeas.get(codigo).xaTraducida();
+    }
+
+    public List<String> getCodigos() {
+        return new ArrayList(codigos);
     }
 
 }

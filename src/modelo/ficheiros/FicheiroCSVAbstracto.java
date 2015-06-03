@@ -63,8 +63,16 @@ public abstract class FicheiroCSVAbstracto {
      *
      * @param index
      * @return
+     * @deprecated 
      */
     public abstract String lerCadea(int index);
+    
+    /**
+     *
+     * @param codigo
+     * @return
+     */
+    public abstract String lerCadea(String codigo);
     
     /**
      *
