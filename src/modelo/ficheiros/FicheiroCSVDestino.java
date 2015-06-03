@@ -90,7 +90,7 @@ public class FicheiroCSVDestino extends FicheiroCSVAbstracto {
     public int getNumCambios() {
         int ret = 0;
         for (CadeaTraducionDestino c : cadeas) {
-            if (c.haiCambios()) {
+            if (c.modificada()) {
                 ret++;
             }
         }
@@ -103,7 +103,7 @@ public class FicheiroCSVDestino extends FicheiroCSVAbstracto {
      * @return
      */
     public boolean haiCambios(int index) {
-        return cadeas.get(index).haiCambios();
+        return cadeas.get(index).modificada();
     }
 
     /**
@@ -139,6 +139,10 @@ public class FicheiroCSVDestino extends FicheiroCSVAbstracto {
     @Override
     public int getSize() {
         return cadeas.size();
+    }
+    
+    public boolean xaTraducida(int index) {
+        return cadeas.get(index).xaTraducida();
     }
 
 }
@@ -176,8 +180,12 @@ class CadeaTraducionDestino extends CadeaTraducion {
         houboCambios = true;
     }
 
-    public boolean haiCambios() {
-        return (traducion != null || houboCambios == true);
+    /**
+     * 
+     * @return 
+     */
+    public boolean modificada() {
+        return (traducion != null);
     }
 
     @Override
@@ -196,9 +204,24 @@ class CadeaTraducionDestino extends CadeaTraducion {
         return unirCadea(codigo, ret);
     }
 
+    /**
+     * Os cambios aceptáronse, de modo que poden suceder dúas cousas:
+     * 1. A cadea traduciuse: borrarase todas as traducións básicas (francés,
+     * alemán, español).
+     * 2. A cadea non se traduciu / restaurouse da orixinal: non sucede nada.
+     */
     void aceptarCambios() {
+        if(traducion != null) { //houbo tradución
+            for(int i = 1; i < traducions.size(); i++) {
+                traducions.set(i, "");
+            }
+        }
         traducions.set(0, traducion);
         traducion = null;
     }
 
+    
+    public boolean xaTraducida() {
+        return traducions.get(1).equals("");
+    }
 }

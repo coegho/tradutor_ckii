@@ -335,7 +335,7 @@
             <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="listCodigosValueChanged"/>
           </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="lc = new ListaCodigos(getListaFicheiros());&#xa;listCodigos.setModel(lc);&#xa;listFicheiros.addListSelectionListener(lc);"/>
+            <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="lc = new ListaCodigos(getListaFicheiros());&#xa;listCodigos.setModel(lc);&#xa;listCodigos.setCellRenderer(new CodigosCellRenderer(lc));&#xa;listFicheiros.addListSelectionListener(lc);"/>
           </AuxValues>
         </Component>
       </SubComponents>

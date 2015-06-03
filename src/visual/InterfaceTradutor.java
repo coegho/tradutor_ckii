@@ -3,16 +3,13 @@ package visual;
 import excepcions.CancelarAccionExcepcion;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import modelo.CodigosCellRenderer;
 import modelo.Configuracion;
 import modelo.ficheiros.FicheiroCSVOrixe;
 import modelo.ficheiros.FicheiroCSVDestino;
@@ -146,6 +143,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         jScrollPane3.setViewportView(listCodigos);
         lc = new ListaCodigos(getListaFicheiros());
         listCodigos.setModel(lc);
+        listCodigos.setCellRenderer(new CodigosCellRenderer(lc));
         listFicheiros.addListSelectionListener(lc);
 
         txtCodigo.setEditable(false);
@@ -384,7 +382,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         }
 
         //Cárgase a seguinte
-        if (index != -1) {
+        if (index != -1 && index < getFicheiroOrixeActivo().getSize()) {
             txtCodigo.setText(getFicheiroOrixeActivo().lerCodigo(index));
             txtIngles.setText(getFicheiroOrixeActivo().lerTraducion(index,
                     FicheiroCSVOrixe.idiomaBase.INGLES));
@@ -451,6 +449,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
     private void miGardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miGardarActionPerformed
         try {
             gardarDatos();
+            miGardar.setEnabled(false);
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(this, "Ocorreu un erro cos ficheiros. Comprobe os permisos do directorio.");
         }
@@ -648,11 +647,16 @@ public class InterfaceTradutor extends javax.swing.JFrame {
     }
 
     /**
-     *
+     * Método que é chamado polo listener cando se cambia algo na tradución
+     * actual.
      */
     public void notificarCambioNaTraducion() {
         if (!cambiando) {
-            traducionTocada = true;
+            if(traducionTocada == false) {
+                traducionTocada = true;
+                miGardar.setEnabled(true);
+                mostrarEstadoGardado();
+            }
         }
     }
 
@@ -682,29 +686,19 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         return lf;
     }
 
-    private void setListaFicheiros(ListaFicheiros lf) {
-        this.lf = lf;
-        setListaCodigos(null);
-    }
-
-    private ListaCodigos getListaCodigos() {
-        return lc;
-    }
-
-    private void setListaCodigos(ListaCodigos lc) {
-        this.lc = lc;
-        txtTraducion.setEnabled(lc != null);
-    }
     
     /**
      *
      * @throws IOException
      */
     public void gardarDatos() throws IOException {
+        //Gardando os cambios na liña actual
         if (indexActual != -1 && txtTraducion.isEnabled() && traducionTocada) {
             ficheiroDestinoActivo.setTraducion(indexActual, txtTraducion.getText());
+            traducionTocada = false;
         }
         getListaFicheiros().gardarDatos();
+        
         mostrarEstadoGardado();
     }
 
