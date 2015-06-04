@@ -1,5 +1,6 @@
 package modelo.listas;
 
+import excepcions.MalFormatoExcepcion;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JList;
@@ -61,10 +62,6 @@ public class ListaCodigos implements ListModel, ListSelectionListener {
 
     @Override
     public int getSize() {
-        /*if(ficheiroDestino != null) {
-            return ficheiroDestino.getSize();
-        }
-        return 0;*/
         return codigosFiltrados.size();
     }
 
@@ -187,7 +184,7 @@ public class ListaCodigos implements ListModel, ListSelectionListener {
      * @param index
      * @param cadeaOrixe
      */
-    public void restaurarTraducion(int index, String cadeaOrixe) {
+    public void restaurarTraducion(int index, String cadeaOrixe) throws MalFormatoExcepcion {
         getFicheiroDestino().restaurarTraducion(codigosFiltrados.get(index), cadeaOrixe);
     }
     

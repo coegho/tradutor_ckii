@@ -1,5 +1,6 @@
 package modelo.ficheiros.cadeas;
 
+import excepcions.MalFormatoExcepcion;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ public class CadeaTraducionDestino extends CadeaTraducion {
     boolean houboCambios = false;
     String traducion;
 
-    public CadeaTraducionDestino(String cadea) {
+    public CadeaTraducionDestino(String cadea) throws MalFormatoExcepcion {
         super.CadeaTraducion(cadea);
     }
 
@@ -24,7 +25,7 @@ public class CadeaTraducionDestino extends CadeaTraducion {
         }
     }
 
-    public void setTraducionsDendeCadea(String cadea) {
+    public void setTraducionsDendeCadea(String cadea) throws MalFormatoExcepcion {
         if(this.toString().contentEquals(cadea)) { //xa está gardado así en disco
             houboCambios = false;
         }
@@ -75,10 +76,10 @@ public class CadeaTraducionDestino extends CadeaTraducion {
         if(traducion != null) { //houbo tradución
             for(int i = 1; i < traducions.size(); i++) {
                 traducions.set(i, "");
-            }
+            }   
+            traducions.set(0, traducion);
+            traducion = null;
         }
-        traducions.set(0, traducion);
-        traducion = null;
     }
 
     

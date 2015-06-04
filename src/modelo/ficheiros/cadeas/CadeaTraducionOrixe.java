@@ -1,10 +1,11 @@
 package modelo.ficheiros.cadeas;
 
+import excepcions.MalFormatoExcepcion;
 import modelo.ficheiros.FicheiroCSVOrixe;
 
 public class CadeaTraducionOrixe extends CadeaTraducion {
 
-    public CadeaTraducionOrixe(String cadea) {
+    public CadeaTraducionOrixe(String cadea) throws MalFormatoExcepcion {
         super.CadeaTraducion(cadea);
     }
 

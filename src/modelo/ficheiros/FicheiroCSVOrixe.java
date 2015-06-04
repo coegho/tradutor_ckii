@@ -1,11 +1,11 @@
 package modelo.ficheiros;
 
+import excepcions.MalFormatoExcepcion;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import modelo.ficheiros.cadeas.CadeaTraducionOrixe;
 
@@ -22,15 +22,22 @@ public class FicheiroCSVOrixe extends FicheiroCSVAbstracto {
      * @param ficheiro
      * @throws FileNotFoundException
      * @throws IOException
+     * @throws excepcions.MalFormatoExcepcion
      */
-    public FicheiroCSVOrixe(File ficheiro) throws FileNotFoundException, IOException {
+    public FicheiroCSVOrixe(File ficheiro) throws FileNotFoundException, IOException, MalFormatoExcepcion {
         this.ficheiro = ficheiro;
         cadeas = new HashMap<>();
         codigos = new ArrayList<>();
         for (String l : lerCadeasDendeFicheiro(ficheiro)) {
+            try {
             CadeaTraducionOrixe c = new CadeaTraducionOrixe(l);
             codigos.add(c.getCodigo());
             cadeas.put(c.getCodigo(), c);
+            }
+            catch (MalFormatoExcepcion ex) {
+                ex.setNomeFicheiro(ficheiro.getName());
+                throw ex;
+            }
         }
     }
 

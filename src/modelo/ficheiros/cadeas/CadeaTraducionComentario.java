@@ -1,5 +1,7 @@
 package modelo.ficheiros.cadeas;
 
+import excepcions.MalFormatoExcepcion;
+
 /**
  * Clase simple que simula unha liña de tradución, pero en realidade almacena
  * un comentario.
@@ -10,7 +12,7 @@ public class CadeaTraducionComentario extends CadeaTraducionDestino {
     private String comentario;
     private boolean modificada = false;
 
-    public CadeaTraducionComentario(String comentario) {
+    public CadeaTraducionComentario(String comentario) throws MalFormatoExcepcion {
         super(comentario);
         this.comentario = comentario;
     }

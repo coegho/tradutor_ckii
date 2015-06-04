@@ -1,9 +1,11 @@
 package visual;
 
 import excepcions.CancelarAccionExcepcion;
+import excepcions.MalFormatoExcepcion;
 import java.awt.Cursor;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import javax.swing.JFileChooser;
@@ -462,7 +464,6 @@ public class InterfaceTradutor extends javax.swing.JFrame {
                 txtTraducion.setText("");
             }
             cambiando = false;
-            
         } else {
             txtCodigo.setText("");
             txtIngles.setText("");
@@ -534,12 +535,16 @@ public class InterfaceTradutor extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowOpened
 
     private void miRestaurarTraducionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miRestaurarTraducionActionPerformed
-        String cadeaOrixe = lc.getFicheiroOrixe().lerCadea(lc.getCodigo(indexActual));
-        lc.restaurarTraducion(indexActual, cadeaOrixe);
-        cambiando = true;
-        txtTraducion.setText(lc.getFicheiroOrixe().lerTraducion(lc.getCodigo(indexActual), FicheiroCSVOrixe.idiomaBase.INGLES));
-        cambiando = false;
-        traducionTocada = false;
+        try {
+            String cadeaOrixe = lc.getFicheiroOrixe().lerCadea(lc.getCodigo(indexActual));
+            lc.restaurarTraducion(indexActual, cadeaOrixe);
+            cambiando = true;
+            txtTraducion.setText(lc.getFicheiroOrixe().lerTraducion(lc.getCodigo(indexActual), FicheiroCSVOrixe.idiomaBase.INGLES));
+            cambiando = false;
+            traducionTocada = false;
+        } catch (MalFormatoExcepcion ex) {
+           JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro de formato", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_miRestaurarTraducionActionPerformed
 
     private void btbProcurarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btbProcurarActionPerformed
@@ -566,9 +571,15 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         confirmarGardado();
         
         if (directorio.isDirectory()) {
-            getListaFicheiros().cargarFicheirosOrixe(directorio);
-            setRutaDirectorioOrixe(directorio.getAbsolutePath());
-            miRestaurarTraducion.setEnabled(false);
+            try {
+                getListaFicheiros().cargarFicheirosOrixe(directorio);
+                setRutaDirectorioOrixe(directorio.getAbsolutePath());
+                miRestaurarTraducion.setEnabled(false);
+            } catch (FileNotFoundException ex) {
+                 JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            } catch (MalFormatoExcepcion ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro de formato", JOptionPane.ERROR_MESSAGE);
+            }
         } else {
             JOptionPane.showMessageDialog(this, "Débese escoller un directorio.");
         }
@@ -577,9 +588,13 @@ public class InterfaceTradutor extends javax.swing.JFrame {
     private void asignarDirectorioDestino(File directorio) throws CancelarAccionExcepcion, IOException {
         confirmarGardado();
         if (directorio.isDirectory()) {
-            setRutaDirectorioDestino(directorio.getAbsolutePath());
-            getListaFicheiros().cargarFicheirosDestino(directorio);
-            mostrarEstadoGardado();
+            try {
+                setRutaDirectorioDestino(directorio.getAbsolutePath());
+                getListaFicheiros().cargarFicheirosDestino(directorio);
+                mostrarEstadoGardado();
+            } catch (MalFormatoExcepcion ex) {
+                 JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro de formato", JOptionPane.ERROR_MESSAGE);
+            }
         } else {
             JOptionPane.showMessageDialog(this, "Débese escoller un directorio.");
         }
@@ -595,7 +610,13 @@ public class InterfaceTradutor extends javax.swing.JFrame {
                     JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             switch(ret) {
                 case JOptionPane.YES_OPTION:
+            {
+                try {
                     getListaFicheiros().recargarDestino();
+                } catch (MalFormatoExcepcion ex) {
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro de formato", JOptionPane.ERROR_MESSAGE);
+                }
+            }
                     break;
                 case JOptionPane.NO_OPTION:
                     //Non se fai nada

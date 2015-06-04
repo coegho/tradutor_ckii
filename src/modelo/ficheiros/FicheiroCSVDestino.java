@@ -1,11 +1,11 @@
 package modelo.ficheiros;
 
+import excepcions.MalFormatoExcepcion;
 import java.io.File;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import modelo.ficheiros.cadeas.CadeaTraducionComentario;
 import modelo.ficheiros.cadeas.CadeaTraducionDestino;
@@ -22,25 +22,10 @@ public class FicheiroCSVDestino extends FicheiroCSVAbstracto {
      *
      * @param ficheiro
      * @throws IOException
+     * @throws excepcions.MalFormatoExcepcion
      */
-    public FicheiroCSVDestino(File ficheiro) throws IOException {
-        this.ficheiro = ficheiro;
-        cadeas = new HashMap<>();
-        codigos = new ArrayList<>();
-        int nComentario = 1;
-        for (String l : lerCadeasDendeFicheiro(ficheiro)) {
-            if(l.charAt(0) != '#') { //cadea normal
-                CadeaTraducionDestino c = new CadeaTraducionDestino(l);
-                codigos.add(c.getCodigo());
-                cadeas.put(c.getCodigo(), c);
-            }
-            else { //comentario
-                String nomeComentario = "Comentario nº " + Integer.toString(nComentario);
-                codigos.add(nomeComentario);
-                cadeas.put(nomeComentario, new CadeaTraducionComentario(l));
-                nComentario++;
-            }
-        }
+    public FicheiroCSVDestino(File ficheiro) throws IOException, MalFormatoExcepcion {
+        this(ficheiro, ficheiro);
     }
 
     /**
@@ -48,15 +33,37 @@ public class FicheiroCSVDestino extends FicheiroCSVAbstracto {
      * @param orixe
      * @param ficheiro
      * @throws IOException
+     * @throws excepcions.MalFormatoExcepcion
      */
-    public FicheiroCSVDestino(File orixe, File ficheiro) throws IOException {
+    public FicheiroCSVDestino(File orixe, File ficheiro) throws IOException, MalFormatoExcepcion {
         this.ficheiro = ficheiro;
         cadeas = new HashMap<>();
         codigos = new ArrayList<>();
+        int nComentario = 1;
         for (String l : lerCadeasDendeFicheiro(orixe)) {
-            CadeaTraducionDestino c = new CadeaTraducionDestino(l);
-            codigos.add(c.getCodigo());
-            cadeas.put(c.getCodigo(), c);
+            if(l.charAt(0) != '#') { //cadea normal
+                try {
+                CadeaTraducionDestino c = new CadeaTraducionDestino(l);
+                codigos.add(c.getCodigo());
+                cadeas.put(c.getCodigo(), c);
+                }
+                catch (MalFormatoExcepcion ex) {
+                    //TODO: crear clase que especifique liña errónea
+                    ex.setNomeFicheiro(orixe.getName());
+                    throw ex;
+                }
+            }
+            else { //comentario
+                String nomeComentario = "Comentario nº " + Integer.toString(nComentario);
+                codigos.add(nomeComentario);
+                try {
+                cadeas.put(nomeComentario, new CadeaTraducionComentario(l));
+                }
+                catch (MalFormatoExcepcion ex) {
+                    //Non importan os fallos de formato cando se trata dun comentario
+                }
+                nComentario++;
+            }
         }
     }
 
@@ -119,9 +126,10 @@ public class FicheiroCSVDestino extends FicheiroCSVAbstracto {
      *
      * @param index
      * @param cadeaOrixe
+     * @throws excepcions.MalFormatoExcepcion
      * @deprecated 
      */
-    public void restaurarTraducion(int index, String cadeaOrixe) {
+    public void restaurarTraducion(int index, String cadeaOrixe) throws MalFormatoExcepcion {
        restaurarTraducion(codigos.get(index), cadeaOrixe);
     }
     
@@ -129,8 +137,9 @@ public class FicheiroCSVDestino extends FicheiroCSVAbstracto {
      *
      * @param codigo
      * @param cadeaOrixe
+     * @throws excepcions.MalFormatoExcepcion
      */
-    public void restaurarTraducion(String codigo, String cadeaOrixe) {
+    public void restaurarTraducion(String codigo, String cadeaOrixe) throws MalFormatoExcepcion {
         cadeas.get(codigo).setTraducionsDendeCadea(cadeaOrixe);
     }
 

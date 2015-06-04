@@ -1,5 +1,6 @@
 package modelo.ficheiros.cadeas;
 
+import excepcions.MalFormatoExcepcion;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,17 +16,25 @@ public abstract class CadeaTraducion {
     /**
      *
      * @param cadea
+     * @throws excepcions.MalFormatoExcepcion
      */
-    public void CadeaTraducion(String cadea) {
+    public void CadeaTraducion(String cadea) throws MalFormatoExcepcion {
         construirDendeCadea(cadea);
     }
     
     /**
      *
      * @param cadea
+     * @throws excepcions.MalFormatoExcepcion
      */
-    public void construirDendeCadea(String cadea) {
+    public void construirDendeCadea(String cadea) throws MalFormatoExcepcion {
         traducions = Arrays.asList(cadea.split(";"));
+        if(traducions.size() < 6 /*|| !"x".equals(traducions.get(14))*/) {
+            /*Os ficheiros orixinais teñen demasiados erros de formato, non
+            funcionaría*/
+            System.out.println(traducions.size());
+            throw new MalFormatoExcepcion(traducions.get(0));
+        }
         codigo = traducions.get(0);
         traducions = traducions.subList(1, traducions.size());
     }

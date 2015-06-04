@@ -1,6 +1,8 @@
 package modelo.listas;
 
+import excepcions.MalFormatoExcepcion;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -159,7 +161,14 @@ public class ListaFicheiros implements ListModel {
         listener.remove(l);
     }
 
-    public void cargarFicheirosOrixe(File orixe) throws IOException {
+    /**
+     *
+     * @param orixe
+     * @throws IOException
+     * @throws FileNotFoundException
+     * @throws MalFormatoExcepcion
+     */
+    public void cargarFicheirosOrixe(File orixe) throws IOException, FileNotFoundException, MalFormatoExcepcion {
         setDirectorioOrixe(orixe);
         if (orixe.isDirectory()) {
             File[] ficheiros = orixe.listFiles(new FilenameFilter() {
@@ -183,8 +192,9 @@ public class ListaFicheiros implements ListModel {
      *
      * @param destino
      * @throws IOException
+     * @throws excepcions.MalFormatoExcepcion
      */
-    public void cargarFicheirosDestino(File destino) throws IOException {
+    public void cargarFicheirosDestino(File destino) throws IOException, MalFormatoExcepcion {
         setDirectorioDestino(destino);
         
         if (destino.isDirectory()) {
@@ -217,7 +227,12 @@ public class ListaFicheiros implements ListModel {
         }
     }
     
-    public void recargarDestino() throws IOException {
+    /**
+     *
+     * @throws IOException
+     * @throws MalFormatoExcepcion
+     */
+    public void recargarDestino() throws IOException, MalFormatoExcepcion {
         cargarFicheirosDestino(getDirectorioDestino());
     }
 
