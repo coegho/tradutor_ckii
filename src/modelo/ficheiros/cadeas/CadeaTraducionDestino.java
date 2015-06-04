@@ -53,6 +53,9 @@ public class CadeaTraducionDestino extends CadeaTraducion {
     @Override
     public String toString() {
         List<String> ret;
+        if("CHAR_LEARNING".equals(getCodigo())) {
+            int a = 1;
+        }
         if (traducion != null) { //Cadea xa traducida
             ret = new ArrayList<>();
             ret.add(getTraducion());
@@ -74,7 +77,7 @@ public class CadeaTraducionDestino extends CadeaTraducion {
      */
     public void aceptarCambios() {
         if(traducion != null) { //houbo tradución
-            for(int i = 1; i < traducions.size(); i++) {
+            for(int i = 1; i < traducions.size()-1; i++) {
                 traducions.set(i, "");
             }   
             traducions.set(0, traducion);
