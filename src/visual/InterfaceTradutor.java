@@ -421,6 +421,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         if (index > -1 && index < lc.getSize()) {
             
             txtCodigo.setText(lc.getCodigo(index));
+            txtCodigo.setEnabled(true);
             
             if(lc.getFicheiroOrixe().conten(lc.getCodigo(index))) {
                 //O código existe na orixe
@@ -464,13 +465,19 @@ public class InterfaceTradutor extends javax.swing.JFrame {
                 txtTraducion.setText("");
             }
             cambiando = false;
-        } else {
+        } else { //Non se seleccionou un valor válido; probablemente deseleccionouse
             txtCodigo.setText("");
             txtIngles.setText("");
             txtFrances.setText("");
             txtAleman.setText("");
             txtEspanhol.setText("");
             txtTraducion.setText("");
+            txtCodigo.setEnabled(false);
+            txtIngles.setEnabled(false);
+            txtFrances.setEnabled(false);
+            txtAleman.setEnabled(false);
+            txtEspanhol.setEnabled(false);
+            txtTraducion.setEnabled(false);
         }
         indexActual = index;
         traducionTocada = false;
@@ -565,6 +572,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         lc.borrarFiltros();
         lc.aplicarFiltro();
         this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        listCodigos.clearSelection();
     }
     
     private void asignarDirectorioOrixe(File directorio) throws IOException, CancelarAccionExcepcion {
