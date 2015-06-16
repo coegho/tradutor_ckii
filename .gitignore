@@ -1,6 +1,6 @@
 *.class
 *.jar
 
-dist/*
-build/*
-conf.txt
+dist/
+build/
+nbproject/
