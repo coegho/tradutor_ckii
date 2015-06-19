@@ -23,7 +23,13 @@ import modelo.listas.ListaFicheiros;
  * @author coegho
  */
 public class InterfaceTradutor extends javax.swing.JFrame {
-
+    private String rutaDirectorioOrixe;
+    private String rutaDirectorioDestino;
+    private ListaFicheiros lf;
+    private ListaCodigos lc;
+    int indexActual = -1;
+    boolean cambiando = false;
+    boolean traducionTocada = false;
     /**
      * Creates new form Interface
      */
@@ -50,10 +56,10 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         lblIngles = new javax.swing.JLabel();
         lblFrances = new javax.swing.JLabel();
         lblAleman = new javax.swing.JLabel();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        listFicheirosPane = new javax.swing.JScrollPane();
         listFicheiros = new javax.swing.JList();
         jSeparator1 = new javax.swing.JSeparator();
-        jScrollPane3 = new javax.swing.JScrollPane();
+        listCodigosPane = new javax.swing.JScrollPane();
         listCodigos = new javax.swing.JList();
         txtCodigo = new javax.swing.JTextField();
         txtIngles = new javax.swing.JTextField();
@@ -130,13 +136,15 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         lblAleman.setText("Alemán:");
 
         listFicheiros.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        lf = new ListaFicheiros();
+        lc = new ListaCodigos(lf);
+        listFicheiros.addListSelectionListener(lc);
         listFicheiros.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
                 listFicheirosValueChanged(evt);
             }
         });
-        jScrollPane2.setViewportView(listFicheiros);
-        lf = new ListaFicheiros();
+        listFicheirosPane.setViewportView(listFicheiros);
         listFicheiros.setModel(lf);
 
         listCodigos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -145,11 +153,9 @@ public class InterfaceTradutor extends javax.swing.JFrame {
                 listCodigosValueChanged(evt);
             }
         });
-        jScrollPane3.setViewportView(listCodigos);
-        lc = new ListaCodigos(getListaFicheiros());
+        listCodigosPane.setViewportView(listCodigos);
         listCodigos.setModel(lc);
         listCodigos.setCellRenderer(new CodigosCellRenderer(lc));
-        listFicheiros.addListSelectionListener(lc);
 
         txtCodigo.setEditable(false);
 
@@ -294,7 +300,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
                             .addComponent(txtRutaDestino)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 365, Short.MAX_VALUE)
+                            .addComponent(listCodigosPane, javax.swing.GroupLayout.DEFAULT_SIZE, 365, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(txtProcurar)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -302,7 +308,7 @@ public class InterfaceTradutor extends javax.swing.JFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(chkSenTraducir)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(listFicheirosPane, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -318,13 +324,13 @@ public class InterfaceTradutor extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane3)
+                        .addComponent(listCodigosPane)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(chkSenTraducir, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btbProcurar, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtProcurar, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE))
+                    .addComponent(listFicheirosPane, javax.swing.GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE))
                 .addGap(2, 2, 2)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -361,13 +367,6 @@ public class InterfaceTradutor extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private String rutaDirectorioOrixe;
-    private String rutaDirectorioDestino;
-    private ListaFicheiros lf;
-    private ListaCodigos lc;
-    int indexActual = -1;
-    boolean cambiando = false;
-    boolean traducionTocada = false;
 
     private void btbArribaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btbArribaActionPerformed
         listCodigos.setSelectedIndex(listCodigos.getSelectedIndex() - 1);
@@ -833,8 +832,6 @@ public class InterfaceTradutor extends javax.swing.JFrame {
     private javax.swing.JCheckBox chkSenTraducir;
     private javax.swing.JFileChooser dialEscollerFicheiro;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JLabel lblAleman;
     private javax.swing.JLabel lblCodigo;
@@ -845,7 +842,9 @@ public class InterfaceTradutor extends javax.swing.JFrame {
     private javax.swing.JLabel lblIngles;
     private javax.swing.JLabel lblOrixe;
     private javax.swing.JList listCodigos;
+    private javax.swing.JScrollPane listCodigosPane;
     private javax.swing.JList listFicheiros;
+    private javax.swing.JScrollPane listFicheirosPane;
     private javax.swing.JMenu mFicheiro;
     private javax.swing.JMenu mNavegacion;
     private javax.swing.JMenuItem miCopiar;

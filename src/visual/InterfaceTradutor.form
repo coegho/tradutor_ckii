@@ -159,7 +159,7 @@
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jScrollPane3" pref="365" max="32767" attributes="0"/>
+                          <Component id="listCodigosPane" pref="365" max="32767" attributes="0"/>
                           <Group type="102" attributes="0">
                               <Component id="txtProcurar" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -169,7 +169,7 @@
                           </Group>
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="jScrollPane2" min="-2" pref="162" max="-2" attributes="0"/>
+                      <Component id="listFicheirosPane" min="-2" pref="162" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -191,7 +191,7 @@
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
-                      <Component id="jScrollPane3" max="32767" attributes="0"/>
+                      <Component id="listCodigosPane" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="chkSenTraducir" alignment="3" min="-2" pref="18" max="-2" attributes="0"/>
@@ -199,7 +199,7 @@
                           <Component id="txtProcurar" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <Component id="jScrollPane2" pref="202" max="32767" attributes="0"/>
+                  <Component id="listFicheirosPane" pref="202" max="32767" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
               <Component id="jSeparator1" min="-2" pref="10" max="-2" attributes="0"/>
@@ -309,7 +309,7 @@
         <Property name="text" type="java.lang.String" value="Alem&#xe1;n:"/>
       </Properties>
     </Component>
-    <Container class="javax.swing.JScrollPane" name="jScrollPane2">
+    <Container class="javax.swing.JScrollPane" name="listFicheirosPane">
       <AuxValues>
         <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
       </AuxValues>
@@ -327,14 +327,15 @@
             <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="listFicheirosValueChanged"/>
           </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="lf = new ListaFicheiros();&#xa;listFicheiros.setModel(lf);"/>
+            <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="listFicheiros.setModel(lf);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="lf = new ListaFicheiros();&#xa;lc = new ListaCodigos(lf);&#xa;listFicheiros.addListSelectionListener(lc);"/>
           </AuxValues>
         </Component>
       </SubComponents>
     </Container>
     <Component class="javax.swing.JSeparator" name="jSeparator1">
     </Component>
-    <Container class="javax.swing.JScrollPane" name="jScrollPane3">
+    <Container class="javax.swing.JScrollPane" name="listCodigosPane">
       <AuxValues>
         <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
       </AuxValues>
@@ -352,7 +353,7 @@
             <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="listCodigosValueChanged"/>
           </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="lc = new ListaCodigos(getListaFicheiros());&#xa;listCodigos.setModel(lc);&#xa;listCodigos.setCellRenderer(new CodigosCellRenderer(lc));&#xa;listFicheiros.addListSelectionListener(lc);"/>
+            <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="listCodigos.setModel(lc);&#xa;listCodigos.setCellRenderer(new CodigosCellRenderer(lc));"/>
           </AuxValues>
         </Component>
       </SubComponents>

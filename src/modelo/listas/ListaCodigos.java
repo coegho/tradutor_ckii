@@ -84,8 +84,8 @@ public class ListaCodigos implements ListModel, ListSelectionListener {
     @Override
     public void valueChanged(ListSelectionEvent e) {
         //Chámase cando cambia a lista de códigos
-        JList list = (JList) e.getSource();
-        setFicheiroDestino(lf.getFicheiroDestino(list.getSelectedIndex()));
+        JList listFicheiros = (JList) e.getSource();
+        setFicheiroDestino(lf.getFicheiroDestino(listFicheiros.getSelectedIndex()));
         for(ListDataListener l : listener) {
             l.contentsChanged(new ListDataEvent(this,
                     ListDataEvent.CONTENTS_CHANGED,0,codigosFiltrados.size()));
