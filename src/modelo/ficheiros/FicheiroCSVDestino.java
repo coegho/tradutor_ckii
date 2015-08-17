@@ -36,11 +36,15 @@ public class FicheiroCSVDestino extends FicheiroCSVAbstracto {
      * @throws excepcions.MalFormatoExcepcion
      */
     public FicheiroCSVDestino(File orixe, File ficheiro) throws IOException, MalFormatoExcepcion {
-        this.ficheiro = ficheiro;
+        super(ficheiro.getName(), ficheiro, new ArrayList<String>());
         cadeas = new HashMap<>();
-        codigos = new ArrayList<>();
         int nComentario = 1;
+        
         for (String l : lerCadeasDendeFicheiro(orixe)) {
+            /*Outro apaño máis...*/
+            if(l.length() == 0) {
+                continue;
+            }
             if(l.charAt(0) != '#') { //cadea normal
                 try {
                 CadeaTraducionDestino c = new CadeaTraducionDestino(l);
@@ -181,7 +185,7 @@ public class FicheiroCSVDestino extends FicheiroCSVAbstracto {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public void escribirDatos() throws FileNotFoundException, IOException {
+    public final void escribirDatos() throws FileNotFoundException, IOException {
         if (getNumCambios() == 0) {
             return;
         }

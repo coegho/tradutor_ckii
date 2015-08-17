@@ -1,6 +1,7 @@
 package modelo.ficheiros.cadeas;
 
 import excepcions.MalFormatoExcepcion;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,15 +29,29 @@ public abstract class CadeaTraducion {
      * @throws excepcions.MalFormatoExcepcion
      */
     public void construirDendeCadea(String cadea) throws MalFormatoExcepcion {
-        traducions = Arrays.asList(cadea.split(";"));
-        if(traducions.size() < 6 /*|| !"x".equals(traducions.get(14))*/) {
-            /*Os ficheiros orixinais teñen demasiados erros de formato, non
-            funcionaría*/
-            System.out.println(traducions.size());
-            throw new MalFormatoExcepcion(traducions.get(0));
+        List<String> traducionsOrixinais = Arrays.asList(cadea.split(";"));
+        
+        codigo = traducionsOrixinais.get(0);
+        if(traducionsOrixinais.size() < 6) {
+            //Os ficheiros orixinais teñen demasiados erros de formato, non
+            //funcionaría
+            //System.out.println(traducions.size());
+            //throw new MalFormatoExcepcion(traducions.get(0));
+            
+            /*Pequeno apaño para pasar por alto os erros de formato de Paradox...
+            Dios mío, espero que hayan despedido a alguien por ese patinazo*/
+            traducions = new ArrayList<>();
+            int i;
+            for(i = 1; i < 6; i++) {
+                if(traducionsOrixinais.size() > i) { //Atopa cadea
+                    traducions.add(traducionsOrixinais.get(i));
+                }
+            }
+            /*Aquí remata o apaño*/
         }
-        codigo = traducions.get(0);
-        traducions = traducions.subList(1, traducions.size());
+        else {
+            traducions = traducionsOrixinais.subList(1, traducionsOrixinais.size());
+        }
     }
             
     /**

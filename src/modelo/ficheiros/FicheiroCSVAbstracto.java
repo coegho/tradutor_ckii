@@ -20,6 +20,12 @@ public abstract class FicheiroCSVAbstracto {
     protected String nome;
     protected File ficheiro;
     protected List<String> codigos;
+
+    public FicheiroCSVAbstracto(String nome, File ficheiro, List<String> codigos) {
+        this.nome = nome;
+        this.ficheiro = ficheiro;
+        this.codigos = codigos;
+    }
     
     /**
      *
@@ -28,10 +34,8 @@ public abstract class FicheiroCSVAbstracto {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public List<String> lerCadeasDendeFicheiro(File ficheiro) throws FileNotFoundException, IOException {
+    public static List<String> lerCadeasDendeFicheiro(File ficheiro) throws FileNotFoundException, IOException {
         List<String> ret = new ArrayList<>();
-        this.ficheiro = ficheiro;
-        nome = ficheiro.getName();
         try (BufferedReader buffer = new BufferedReader(
                 new InputStreamReader(
                         new DataInputStream(

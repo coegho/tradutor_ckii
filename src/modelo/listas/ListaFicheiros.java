@@ -216,7 +216,10 @@ public class ListaFicheiros implements ListModel {
                 //Engádense os ficheiros que faltan
                 for(String f : ficheirosOrixe.keySet()) {
                     if(!nomesFicheirosDestino.contains(f)) {
-                        csv.put(f, new FicheiroCSVDestino(ficheirosOrixe.get(f).getFicheiro(),new File(directorioDestino, f)));
+                        File novoF = new File(directorioDestino, f);
+                        FicheiroCSVDestino novoCSV =
+                                new FicheiroCSVDestino(ficheirosOrixe.get(f).getFicheiro(),novoF);
+                        csv.put(f, novoCSV);
                         nomesFicheirosDestino.add(f);
                     }
                 }

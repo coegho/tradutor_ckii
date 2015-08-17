@@ -183,6 +183,7 @@ public class ListaCodigos implements ListModel, ListSelectionListener {
      *
      * @param index
      * @param cadeaOrixe
+     * @throws excepcions.MalFormatoExcepcion
      */
     public void restaurarTraducion(int index, String cadeaOrixe) throws MalFormatoExcepcion {
         getFicheiroDestino().restaurarTraducion(codigosFiltrados.get(index), cadeaOrixe);

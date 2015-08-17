@@ -25,9 +25,9 @@ public class FicheiroCSVOrixe extends FicheiroCSVAbstracto {
      * @throws excepcions.MalFormatoExcepcion
      */
     public FicheiroCSVOrixe(File ficheiro) throws FileNotFoundException, IOException, MalFormatoExcepcion {
-        this.ficheiro = ficheiro;
+        super(ficheiro.getName(), ficheiro, new ArrayList<String>());
         cadeas = new HashMap<>();
-        codigos = new ArrayList<>();
+        
         for (String l : lerCadeasDendeFicheiro(ficheiro)) {
             try {
             CadeaTraducionOrixe c = new CadeaTraducionOrixe(l);
