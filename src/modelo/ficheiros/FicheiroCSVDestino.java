@@ -195,7 +195,8 @@ public class FicheiroCSVDestino extends FicheiroCSVAbstracto {
             //Lese a lista de cadeas para que se garden nunha orde determinada
             for (String c : codigos) {
                 bw.write(cadeas.get(c).toString());
-                bw.newLine();
+                //bw.newLine(); Precisamos manter o formato de Windows, cousas de Paradox
+                bw.write("\r\n");
                 cadeas.get(c).aceptarCambios();
             }
         }
